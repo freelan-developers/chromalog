@@ -3,26 +3,10 @@ Test important object marking.
 """
 
 from unittest import TestCase
-from nose_parameterized import parameterized
 
-from chromalog.important import (
-    Important,
-    hl,
-)
+from chromalog.important import Important
 
-
-def repeat_for_values(values=None):
-    if not values:
-        values = {
-            "integers": 42,
-            "floats": 3.14,
-            "strings": "Hello you",
-            "unicode_strings": "Hello you",
-            "booleans": True,
-            "none": None,
-        }
-
-    return parameterized.expand(values.items())
+from .common import repeat_for_values
 
 
 class ImportantTests(TestCase):
@@ -35,9 +19,12 @@ class ImportantTests(TestCase):
         self.assertEqual(u'{}'.format(value), u'{}'.format(Important(value)))
 
     @repeat_for_values()
-    def test_hl_returns_important_objects_for(self, _, value):
-        self.assertEqual(Important(value), hl(value))
+    def test_important_objects_dont_compare_to_their_value_as(self, _, value):
+        self.assertNotEqual(value, Important(value))
 
     @repeat_for_values()
-    def test_important_objects_do_not_compare_to_their_value_as(self, _, value):
-        self.assertNotEqual(value, Important(value))
+    def test_important_objects_have_a_color_tag_attribute_for(self, _, value):
+        self.assertTrue(hasattr(Important(value), 'color_tag'))
+        self.assertTrue(
+            hasattr(Important(value, color_tag='info'), 'color_tag'),
+        )
