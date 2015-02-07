@@ -23,6 +23,7 @@ highlight important elements of a given log entry.
         'tests',
     ]),
     install_requires=[
+        'colorama==0.3.3',
     ],
     test_suite='tests',
     classifiers=[
