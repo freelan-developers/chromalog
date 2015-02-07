@@ -8,7 +8,7 @@ setup(
     url='http://chromalog.readthedocs.org/en/latest/index.html',
     author='Julien Kauffmann',
     author_email='julien.kauffmann@freelan.org',
-    license='GPLv3',
+    license='MIT',
     version=open('VERSION').read().strip(),
     description=(
         "Enhance Python with colored logging"
