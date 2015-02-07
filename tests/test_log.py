@@ -231,3 +231,36 @@ class LogTests(TestCase):
 
         # Make sure that the colorizer attribute was removed after processing.
         self.assertFalse(hasattr(record, 'colorizer'))
+
+    def test_csh_format_disabled_color_support(self):
+        colorizer = GenericColorizer(color_map={
+            'bracket': ('[', ']'),
+        })
+        highlighter = GenericColorizer(color_map={
+            'bracket': ('<', '>'),
+        })
+        formatter = ColorizingFormatter(fmt='%(message)s')
+        color_stream = MagicMock()
+        color_stream.isatty = lambda: True
+        handler = ColorizingStreamHandler(
+            stream=color_stream,
+            colorizer=colorizer,
+            highlighter=highlighter,
+        )
+        handler.color_disabled = True
+        handler.setFormatter(formatter)
+
+        record = LogRecord(
+            name='my_record',
+            level=DEBUG,
+            pathname='my_path',
+            lineno=42,
+            msg='%s + %s gives %s',
+            args=(4, 5, hl(4 + 5, color_tag='bracket'),),
+            exc_info=None,
+        )
+
+        self.assertEqual('4 + 5 gives <9>', handler.format(record))
+
+        # Make sure that the colorizer attribute was removed after processing.
+        self.assertFalse(hasattr(record, 'colorizer'))
