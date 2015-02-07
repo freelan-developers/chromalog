@@ -3,6 +3,7 @@ Test important object marking.
 """
 
 from unittest import TestCase
+from nose_parameterized import parameterized
 
 from chromalog.important import (
     Important,
@@ -10,59 +11,33 @@ from chromalog.important import (
 )
 
 
+def repeat_for_values(values=None):
+    if not values:
+        values = {
+            "integers": 42,
+            "floats": 3.14,
+            "strings": "Hello you",
+            "unicode_strings": "Hello you",
+            "booleans": True,
+            "none": None,
+        }
+
+    return parameterized.expand(values.items())
+
+
 class ImportantTests(TestCase):
-    def test_important_integers_can_render_as_strings(self):
-        value = 42
+    @repeat_for_values()
+    def test_string_rendering_of_important(self, _, value):
         self.assertEqual('{}'.format(value), '{}'.format(Important(value)))
 
-    def test_important_floats_can_render_as_strings(self):
-        value = 3.14
-        self.assertEqual('{}'.format(value), '{}'.format(Important(value)))
-
-    def test_important_strings_can_render_as_strings(self):
-        value = "Hello you"
-        self.assertEqual('{}'.format(value), '{}'.format(Important(value)))
-
-    def test_important_unicode_strings_can_render_as_strings(self):
-        value = u"Hello you"
-        self.assertEqual('{}'.format(value), '{}'.format(Important(value)))
-
-    def test_important_booleans_can_render_as_strings(self):
-        value = True
-        self.assertEqual('{}'.format(value), '{}'.format(Important(value)))
-
-    def test_important_none_can_render_as_strings(self):
-        value = None
-        self.assertEqual('{}'.format(value), '{}'.format(Important(value)))
-
-    def test_important_integers_can_render_as_unicode_strings(self):
-        value = 42
+    @repeat_for_values()
+    def test_unicode_rendering_of_important(self, _, value):
         self.assertEqual(u'{}'.format(value), u'{}'.format(Important(value)))
 
-    def test_important_floats_can_render_as_unicode_strings(self):
-        value = 3.14
-        self.assertEqual(u'{}'.format(value), u'{}'.format(Important(value)))
-
-    def test_important_strings_can_render_as_unicode_strings(self):
-        value = "Hello you"
-        self.assertEqual(u'{}'.format(value), u'{}'.format(Important(value)))
-
-    def test_important_unicode_strings_can_render_as_unicode_strings(self):
-        value = u"Hello you"
-        self.assertEqual(u'{}'.format(value), u'{}'.format(Important(value)))
-
-    def test_important_booleans_can_render_as_unicode_strings(self):
-        value = True
-        self.assertEqual(u'{}'.format(value), u'{}'.format(Important(value)))
-
-    def test_important_none_can_render_as_unicode_strings(self):
-        value = None
-        self.assertEqual(u'{}'.format(value), u'{}'.format(Important(value)))
-
-    def test_hl_returns_important_objects(self):
-        value = "Hello you"
+    @repeat_for_values()
+    def test_hl_returns_important_objects_for(self, _, value):
         self.assertEqual(Important(value), hl(value))
 
-    def test_important_objects_do_not_compare_to_their_value(self):
-        value = "Hello you"
+    @repeat_for_values()
+    def test_important_objects_do_not_compare_to_their_value_as(self, _, value):
         self.assertNotEqual(value, Important(value))
