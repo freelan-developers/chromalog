@@ -8,16 +8,6 @@ from colorama import (
     Style,
 )
 
-DEFAULT_COLOR_MAP = {
-    'debug': (Style.DIM + Fore.CYAN, Style.RESET_ALL),
-    'info': (Style.RESET_ALL, Style.RESET_ALL),
-    'important': (Style.BRIGHT, Style.RESET_ALL),
-    'success': (Fore.GREEN, Style.RESET_ALL),
-    'warning': (Fore.YELLOW, Style.RESET_ALL),
-    'error': (Fore.RED, Style.RESET_ALL),
-    'critical': (Back.RED, Style.RESET_ALL),
-}
-
 
 class ColorizableMixin(object):
     """
@@ -34,12 +24,11 @@ class ColorizableMixin(object):
         self.color_tag = color_tag
 
 
-class Colorizer(object):
+class GenericColorizer(object):
     """
     A class reponsible for colorizing log entries and
     :class:`chromalog.important.Important` objects.
     """
-
     def __init__(self, color_map=None, default_color_tag=None):
         """
         Initialize a new colorizer with a specified `color_map`.
@@ -50,7 +39,7 @@ class Colorizer(object):
             unknown color tag is encountered. If set to a falsy value no
             default is used.
         """
-        self.color_map = color_map or DEFAULT_COLOR_MAP
+        self.color_map = color_map or self.default_color_map
         self.default_color_tag = default_color_tag
 
     def colorize(self, obj):
@@ -81,3 +70,28 @@ class Colorizer(object):
                 )
 
         return obj
+
+
+class Colorizer(GenericColorizer):
+    """
+    Colorize log entries.
+    """
+    default_color_map = {
+        'debug': (Style.DIM + Fore.CYAN, Style.RESET_ALL),
+        'info': (Style.RESET_ALL, Style.RESET_ALL),
+        'important': (Style.BRIGHT, Style.RESET_ALL),
+        'success': (Fore.GREEN, Style.RESET_ALL),
+        'warning': (Fore.YELLOW, Style.RESET_ALL),
+        'error': (Fore.RED, Style.RESET_ALL),
+        'critical': (Back.RED, Style.RESET_ALL),
+    }
+
+
+class MonochromaticColorizer(Colorizer):
+    """
+    Monochromatic colorizer for non-color-capable streams that only highlights
+    :class:`chromalog.important.Important` objects.
+    """
+    default_color_map = {
+        'important': ('**', '**'),
+    }
