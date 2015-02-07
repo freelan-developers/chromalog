@@ -1,0 +1,15 @@
+language: python
+python:
+  - "2.7"
+install:
+  - pip install -r dev_requirements.txt
+  - pip install --editable .
+script:
+  - pep8 --count chromalog tests
+  - coverage run --source=chromalog setup.py nosetests --with-doctest
+  - coverage report -m --fail-under=100
+after_success: coveralls
+notifications:
+    email:
+        on_success: change
+        on_failure: always
