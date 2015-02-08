@@ -42,11 +42,29 @@ class GenericColorizer(object):
         self.color_map = color_map or self.default_color_map
         self.default_color_tag = default_color_tag
 
-    def colorize(self, obj):
+    def _get_color_pair(self, color_tag, context_color_tag=None):
+        result = self.color_map.get(color_tag)
+
+        if not result:
+            result = self.color_map.get(self.default_color_tag)
+
+        if context_color_tag:
+            ctx_pair = self.color_map.get(context_color_tag)
+
+            if ctx_pair:
+                result = (
+                    ctx_pair[1] + ctx_pair[0] + result[0],
+                    result[1] + ctx_pair[1] + ctx_pair[0],
+                )
+
+        return result
+
+    def colorize(self, obj, context_color_tag=None):
         """
         Colorize an object.
 
         :param obj: The object to colorize.
+        :param context_color_tag: The color tag to use as context.
         :returns: `obj` is `obj` is not a colorizable object. A colorized
             string otherwise.
 
@@ -55,10 +73,7 @@ class GenericColorizer(object):
         color_tag = getattr(obj, 'color_tag', None)
 
         if color_tag:
-            color_pair = self.color_map.get(color_tag)
-
-            if not color_pair:
-                color_pair = self.color_map.get(self.default_color_tag)
+            color_pair = self._get_color_pair(color_tag, context_color_tag)
 
             if color_pair:
                 start, stop = color_pair

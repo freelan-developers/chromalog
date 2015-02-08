@@ -6,6 +6,7 @@ import sys
 import logging
 
 from colorama import AnsiToWin32
+from functools import partial
 from contextlib import contextmanager
 
 from .colorizer import Colorizer
@@ -29,9 +30,16 @@ class ColorizingFormatter(logging.Formatter):
         the default non-colorized behaviour is used instead.
         """
         colorizer = getattr(record, 'colorizer', None)
+        message_color_tag = getattr(record, 'message_color_tag', None)
 
         if colorizer:
-            record.args = tuple(map(colorizer.colorize, record.args))
+            record.args = tuple(map(
+                partial(
+                    colorizer.colorize,
+                    context_color_tag=message_color_tag,
+                ),
+                record.args,
+            ))
             record.filename = colorizer.colorize(record.filename)
             record.funcName = colorizer.colorize(record.funcName)
             record.levelname = colorizer.colorize(record.levelname)
@@ -40,6 +48,13 @@ class ColorizingFormatter(logging.Formatter):
             record.pathname = colorizer.colorize(record.pathname)
             record.processName = colorizer.colorize(record.processName)
             record.threadName = colorizer.colorize(record.threadName)
+
+            if message_color_tag:
+                message = colorizer.colorize(hl(
+                    record.getMessage(),
+                    color_tag=message_color_tag,
+                ))
+                record.getMessage = lambda: message
 
         return super(ColorizingFormatter, self).format(record)
 
@@ -53,6 +68,7 @@ class ColorizingStreamHandler(logging.StreamHandler):
     default_attributes_map = {
         'name': 'important',
         'levelname': lambda record: record.levelname.lower(),
+        'message': lambda record: record.levelname.lower(),
     }
 
     @staticmethod
@@ -124,21 +140,30 @@ class ColorizingStreamHandler(logging.StreamHandler):
         finally:
             delattr(record, self._RECORD_ATTRIBUTE_NAME)
 
+    def _color_tag_from_record(self, color_tag, record):
+        if hasattr(color_tag, '__call__'):
+            return color_tag(record)
+        else:
+            return color_tag.format(**record.__dict__)
+
     def format(self, record):
         """
         Format a `LogRecord` and prints it to the associated stream.
         """
         with self.__bind_to_record(record):
             for attribute, color_tag in self.attributes_map.iteritems():
-                if hasattr(color_tag, '__call__'):
-                    setattr(record, attribute, hl(
-                        getattr(record, attribute),
-                        color_tag=color_tag(record),
-                    ))
+                if attribute == 'message':
+                    record.message_color_tag = self._color_tag_from_record(
+                        color_tag,
+                        record,
+                    )
                 else:
                     setattr(record, attribute, hl(
                         getattr(record, attribute),
-                        color_tag=color_tag.format(**record.__dict__),
+                        color_tag=self._color_tag_from_record(
+                            color_tag,
+                            record,
+                        ),
                     ))
 
             return super(ColorizingStreamHandler, self).format(record)

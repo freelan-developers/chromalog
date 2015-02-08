@@ -26,10 +26,12 @@ from chromalog.log import (
 
 class LogTests(TestCase):
     def create_colorizer(self, format):
+        def colorize(obj, context_color_tag=None):
+            return format % obj
+
         result = MagicMock(spec=GenericColorizer)
-        result.colorize = MagicMock(
-            side_effect=lambda x: format % x,
-        )
+        result.colorize = MagicMock(side_effect=colorize)
+
         return result
 
     def test_colorizing_formatter_without_a_colorizer(self):
@@ -68,9 +70,9 @@ class LogTests(TestCase):
             record,
             ColorizingStreamHandler._RECORD_ATTRIBUTE_NAME,
         )
-        colorizer.colorize.assert_any_call(4)
-        colorizer.colorize.assert_any_call(5)
-        colorizer.colorize.assert_any_call(9)
+        colorizer.colorize.assert_any_call(4, context_color_tag=None)
+        colorizer.colorize.assert_any_call(5, context_color_tag=None)
+        colorizer.colorize.assert_any_call(9, context_color_tag=None)
 
     def test_csh_color_support_with_color_stream(self):
         color_stream = MagicMock(spec=object)
@@ -142,6 +144,44 @@ class LogTests(TestCase):
         )
 
         self.assertEqual('4 + 5 gives [9]', handler.format(record))
+
+        # Make sure that the colorizer attribute was removed after processing.
+        self.assertFalse(hasattr(record, 'colorizer'))
+
+    def test_csh_format_with_context(self):
+        colorizer = GenericColorizer(color_map={
+            'bracket': ('[', ']'),
+            'context': ('{', '}'),
+        })
+        highlighter = GenericColorizer(color_map={
+            'bracket': ('<', '>'),
+            'context': ('(', ')'),
+        })
+        formatter = ColorizingFormatter(fmt='%(levelname)s %(message)s')
+        color_stream = MagicMock()
+        color_stream.isatty = lambda: True
+        handler = ColorizingStreamHandler(
+            stream=color_stream,
+            colorizer=colorizer,
+            highlighter=highlighter,
+            attributes_map={
+                'message': 'context',
+                'levelname': 'bracket',
+            },
+        )
+        handler.setFormatter(formatter)
+
+        record = LogRecord(
+            name='my_record',
+            level=DEBUG,
+            pathname='my_path',
+            lineno=42,
+            msg='%s + %s gives %s',
+            args=(4, 5, hl(4 + 5, color_tag='bracket'),),
+            exc_info=None,
+        )
+
+        self.assertEqual('[DEBUG] {4 + 5 gives }{[9]}{}', handler.format(record))
 
         # Make sure that the colorizer attribute was removed after processing.
         self.assertFalse(hasattr(record, 'colorizer'))
@@ -265,7 +305,10 @@ class LogTests(TestCase):
         self.assertEqual('4 + 5 gives <9>', handler.format(record))
 
         # Make sure that the colorizer attribute was removed after processing.
-        self.assertFalse(hasattr(record, 'colorizer'))
+        self.assertFalse(hasattr(
+            record,
+            ColorizingStreamHandler._RECORD_ATTRIBUTE_NAME,
+        ))
 
     def test_basic_config_add_a_stream_handler(self):
         logger = logging.Logger('test')
