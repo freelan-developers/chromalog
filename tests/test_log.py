@@ -283,3 +283,10 @@ class LogTests(TestCase):
         with patch('logging.getLogger', new=lambda: logger):
             basicConfig(level=logging.DEBUG)
             self.assertEqual(logging.DEBUG, logger.level)
+
+    def test_basic_config_sets_format(self):
+        logger = logging.Logger('test')
+
+        with patch('logging.getLogger', new=lambda: logger):
+            basicConfig(format='my format')
+            self.assertEqual('my format', logger.handlers[0].formatter._fmt)
