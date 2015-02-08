@@ -181,7 +181,10 @@ class LogTests(TestCase):
             exc_info=None,
         )
 
-        self.assertEqual('[DEBUG] {4 + 5 gives }{[9]}{}', handler.format(record))
+        self.assertEqual(
+            '[DEBUG] {4 + 5 gives }{[9]}{}',
+            handler.format(record),
+        )
 
         # Make sure that the colorizer attribute was removed after processing.
         self.assertFalse(hasattr(record, 'colorizer'))
