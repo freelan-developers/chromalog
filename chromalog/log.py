@@ -9,6 +9,7 @@ from colorama import AnsiToWin32
 from contextlib import contextmanager
 
 from .colorizer import Colorizer
+from .important import Important as hl
 
 
 class ColorizingFormatter(logging.Formatter):
@@ -27,17 +28,18 @@ class ColorizingFormatter(logging.Formatter):
         use for colorizing the formatted string. If no such attribute is found,
         the default non-colorized behaviour is used instead.
         """
-        colorized_stream_handler = getattr(
-            record,
-            ColorizingStreamHandler._RECORD_ATTRIBUTE_NAME,
-            None,
-        )
+        colorizer = getattr(record, 'colorizer', None)
 
-        if colorized_stream_handler:
-            colorizer = colorized_stream_handler.active_colorizer
-
-            if colorizer:
-                record.args = tuple(map(colorizer.colorize, record.args))
+        if colorizer:
+            record.args = tuple(map(colorizer.colorize, record.args))
+            record.filename = colorizer.colorize(record.filename)
+            record.funcName = colorizer.colorize(record.funcName)
+            record.levelname = colorizer.colorize(record.levelname)
+            record.module = colorizer.colorize(record.module)
+            record.name = colorizer.colorize(record.name)
+            record.pathname = colorizer.colorize(record.pathname)
+            record.processName = colorizer.colorize(record.processName)
+            record.threadName = colorizer.colorize(record.threadName)
 
         return super(ColorizingFormatter, self).format(record)
 
@@ -47,7 +49,11 @@ class ColorizingStreamHandler(logging.StreamHandler):
     A stream handler that colorize its output.
     """
 
-    _RECORD_ATTRIBUTE_NAME = 'colorized_stream_handler'
+    _RECORD_ATTRIBUTE_NAME = 'colorizer'
+    default_attributes_map = {
+        'name': 'important',
+        'levelname': lambda record: record.levelname.lower(),
+    }
 
     @staticmethod
     def stream_has_color_support(stream):
@@ -59,7 +65,13 @@ class ColorizingStreamHandler(logging.StreamHandler):
         """
         return getattr(stream, 'isatty', lambda: False)()
 
-    def __init__(self, stream=None, colorizer=None, highlighter=None):
+    def __init__(
+        self,
+        stream=None,
+        colorizer=None,
+        highlighter=None,
+        attributes_map=None,
+    ):
         """
         Initializes a colorizing stream handler.
 
@@ -69,12 +81,14 @@ class ColorizingStreamHandler(logging.StreamHandler):
             instantiated.
         :param highlighter: The colorizer to use for highlighting the output
             when color is not supported.
+        :param attributes_map: A map of LogRecord attributes/color tags.
         """
         if not stream:
             stream = sys.stderr
 
         self.has_color_support = self.stream_has_color_support(stream)
         self.color_disabled = False
+        self.attributes_map = attributes_map or self.default_attributes_map
 
         if self.has_color_support:
             stream = AnsiToWin32(stream).stream
@@ -103,7 +117,7 @@ class ColorizingStreamHandler(logging.StreamHandler):
 
     @contextmanager
     def __bind_to_record(self, record):
-        setattr(record, self._RECORD_ATTRIBUTE_NAME, self)
+        setattr(record, self._RECORD_ATTRIBUTE_NAME, self.active_colorizer)
 
         try:
             yield
@@ -115,4 +129,16 @@ class ColorizingStreamHandler(logging.StreamHandler):
         Format a `LogRecord` and prints it to the associated stream.
         """
         with self.__bind_to_record(record):
+            for attribute, color_tag in self.attributes_map.iteritems():
+                if hasattr(color_tag, '__call__'):
+                    setattr(record, attribute, hl(
+                        getattr(record, attribute),
+                        color_tag=color_tag(record),
+                    ))
+                else:
+                    setattr(record, attribute, hl(
+                        getattr(record, attribute),
+                        color_tag=color_tag.format(**record.__dict__),
+                    ))
+
             return super(ColorizingStreamHandler, self).format(record)

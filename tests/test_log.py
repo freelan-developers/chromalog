@@ -25,10 +25,9 @@ from chromalog.log import (
 
 
 class LogTests(TestCase):
-    def create_colorizer_stream_handler(self, format):
-        result = MagicMock(spec=ColorizingStreamHandler)
-        result.active_colorizer = MagicMock(spec=GenericColorizer)
-        result.active_colorizer.colorize = MagicMock(
+    def create_colorizer(self, format):
+        result = MagicMock(spec=GenericColorizer)
+        result.colorize = MagicMock(
             side_effect=lambda x: format % x,
         )
         return result
@@ -60,18 +59,18 @@ class LogTests(TestCase):
         setattr(
             record,
             ColorizingStreamHandler._RECORD_ATTRIBUTE_NAME,
-            self.create_colorizer_stream_handler(format='[%s]'),
+            self.create_colorizer(format='[%s]'),
         )
 
         self.assertEqual('[4] + [5] gives [9]', formatter.format(record))
 
-        handler = getattr(
+        colorizer = getattr(
             record,
             ColorizingStreamHandler._RECORD_ATTRIBUTE_NAME,
         )
-        handler.active_colorizer.colorize.assert_any_call(4)
-        handler.active_colorizer.colorize.assert_any_call(5)
-        handler.active_colorizer.colorize.assert_any_call(9)
+        colorizer.colorize.assert_any_call(4)
+        colorizer.colorize.assert_any_call(5)
+        colorizer.colorize.assert_any_call(9)
 
     def test_csh_color_support_with_color_stream(self):
         color_stream = MagicMock(spec=object)
