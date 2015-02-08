@@ -2,6 +2,7 @@
 Test colorized logging structures.
 """
 import sys
+import logging
 
 from unittest import TestCase
 from logging import (
@@ -9,10 +10,12 @@ from logging import (
     DEBUG,
 )
 from mock import (
+    Mock,
     MagicMock,
     patch,
 )
 
+from chromalog import basicConfig
 from chromalog.colorizer import GenericColorizer
 from chromalog.important import Important as hl
 from chromalog.log import (
@@ -264,3 +267,19 @@ class LogTests(TestCase):
 
         # Make sure that the colorizer attribute was removed after processing.
         self.assertFalse(hasattr(record, 'colorizer'))
+
+    def test_basic_config_add_a_stream_handler(self):
+        logger = logging.Logger('test')
+
+        self.assertEqual([], logger.handlers)
+
+        with patch('logging.getLogger', new=lambda: logger):
+            basicConfig()
+            self.assertEqual(1, len(logger.handlers))
+
+    def test_basic_config_sets_level(self):
+        logger = logging.Logger('test')
+
+        with patch('logging.getLogger', new=lambda: logger):
+            basicConfig(level=logging.DEBUG)
+            self.assertEqual(logging.DEBUG, logger.level)

@@ -21,6 +21,7 @@ highlight important elements of a given log entry.
 """,
     packages=find_packages(exclude=[
         'tests',
+        'scripts',
     ]),
     install_requires=[
         'colorama==0.3.3',
