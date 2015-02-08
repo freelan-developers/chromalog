@@ -28,3 +28,21 @@ class ImportantTests(TestCase):
         self.assertTrue(
             hasattr(Important(value, color_tag='info'), 'color_tag'),
         )
+
+    @repeat_for_values()
+    def test_important_objects_can_be_nested_for(self, _, value):
+        obj = Important(Important(value, 'b'), 'a')
+        self.assertEqual(['a', 'b'], obj.color_tag)
+        self.assertEqual(value, obj.obj)
+
+        obj = Important(Important(value, ['b', 'c']), 'a')
+        self.assertEqual(['a', 'b', 'c'], obj.color_tag)
+        self.assertEqual(value, obj.obj)
+
+        obj = Important(Important(value, 'c'), ['a', 'b'])
+        self.assertEqual(['a', 'b', 'c'], obj.color_tag)
+        self.assertEqual(value, obj.obj)
+
+        obj = Important(Important(value, ['c', 'd']), ['a', 'b'])
+        self.assertEqual(['a', 'b', 'c', 'd'], obj.color_tag)
+        self.assertEqual(value, obj.obj)

@@ -16,6 +16,17 @@ class Important(ColorizableMixin):
         :param obj: The object to mark as being important.
         :param color_tag: The color tag to use.
         """
+        if isinstance(obj, Important):
+            if isinstance(color_tag, basestring):
+                color_tag = [color_tag]
+
+            if isinstance(obj.color_tag, basestring):
+                color_tag.append(obj.color_tag)
+            else:
+                color_tag.extend(obj.color_tag)
+
+            obj = obj.obj
+
         super(Important, self).__init__(color_tag=color_tag)
         self.obj = obj
 

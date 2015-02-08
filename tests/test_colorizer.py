@@ -16,13 +16,95 @@ from .common import repeat_for_values
 class ColorizerTests(TestCase):
     @repeat_for_values()
     def test_colorizer_doesnt_change_unknown_types(self, _, value):
-        colorizer = Colorizer()
+        colorizer = Colorizer(color_map={
+            'a': ('[', ']'),
+            'b': ('<', '>'),
+        })
         self.assertEqual(value, colorizer.colorize(value))
 
     @repeat_for_values()
     def test_colorizer_changes_colorizable_types(self, _, value):
-        colorizer = Colorizer()
-        self.assertNotEqual(value, colorizer.colorize(hl(value)))
+        colorizer = Colorizer(color_map={
+            'a': ('[', ']'),
+        })
+        self.assertEqual(
+            '[{}]'.format(value),
+            colorizer.colorize(hl(value, 'a')),
+        )
+
+    @repeat_for_values()
+    def test_colorizer_changes_nested_colorizable_types(self, _, value):
+        colorizer = Colorizer(color_map={
+            'a': ('[', ']'),
+            'b': ('<', '>'),
+        })
+        self.assertEqual(
+            '[<{}>]'.format(value),
+            colorizer.colorize(hl(hl(value, 'b'), 'a')),
+        )
+
+    @repeat_for_values()
+    def test_colorizer_changes_colorizable_types_with_tags(self, _, value):
+        colorizer = Colorizer(color_map={
+            'a': ('[', ']'),
+            'b': ('<', '>'),
+        })
+        self.assertEqual(
+            '[<{}>]'.format(value),
+            colorizer.colorize(hl(value, ['a', 'b'])),
+        )
+
+    @repeat_for_values()
+    def test_colorizer_changes_colorizable_types_with_context(self, _, value):
+        colorizer = Colorizer(color_map={
+            'a': ('[', ']'),
+            'b': ('<', '>'),
+        })
+        self.assertEqual(
+            '><[{}]><'.format(value),
+            colorizer.colorize(
+                hl(value, 'a'),
+                context_color_tag='b',
+            ),
+        )
+
+    @repeat_for_values()
+    def test_colorizer_changes_colorizable_types_with_tags_and_context(
+        self,
+        _,
+        value,
+    ):
+        colorizer = Colorizer(color_map={
+            'a': ('[', ']'),
+            'b': ('(', ')'),
+            'c': ('<', '>'),
+        })
+        self.assertEqual(
+            '><[({})]><'.format(value),
+            colorizer.colorize(
+                hl(value, ['a', 'b']),
+                context_color_tag='c',
+            ),
+        )
+
+    @repeat_for_values()
+    def test_colorizer_changes_colorizable_types_with_nested_and_context(
+        self,
+        _,
+        value,
+    ):
+        colorizer = Colorizer(color_map={
+            'a': ('[', ']'),
+            'b': ('(', ')'),
+            'c': ('<', '>'),
+        })
+        self.assertEqual(
+            '><[({})]><'.format(value),
+            colorizer.colorize(
+                hl(hl(value, 'b'), 'a'),
+                context_color_tag='c',
+            ),
+        )
 
     @repeat_for_values({
         "default_colorizable": ColorizableMixin(),

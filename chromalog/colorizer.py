@@ -19,6 +19,8 @@ class ColorizableMixin(object):
         Initialize a colorizable instance.
 
         :param color_tag: The color tag to associate to this instance.
+
+        `color_tag` can be either a string or a list of strings.
         """
         super(ColorizableMixin, self).__init__()
         self.color_tag = color_tag
@@ -43,21 +45,36 @@ class GenericColorizer(object):
         self.default_color_tag = default_color_tag
 
     def _get_color_pair(self, color_tag, context_color_tag=None):
-        result = self.color_map.get(color_tag)
+        if isinstance(color_tag, basestring):
+            pair = self.color_map.get(color_tag)
 
-        if not result:
-            result = self.color_map.get(self.default_color_tag)
+            if pair:
+                pairs = [pair]
+            else:
+                pairs = []
+        else:
+            pairs = (
+                self.color_map.get(tag)
+                for tag in color_tag
+            )
+            pairs = [pair for pair in pairs if pair is not None]
+
+        if not pairs:
+            pair = self.color_map.get(self.default_color_tag)
+
+            if pair:
+                pairs = [pair]
 
         if context_color_tag:
             ctx_pair = self.color_map.get(context_color_tag)
 
             if ctx_pair:
-                result = (
-                    ctx_pair[1] + ctx_pair[0] + result[0],
-                    result[1] + ctx_pair[1] + ctx_pair[0],
-                )
+                pairs = [ctx_pair[::-1], ctx_pair] + pairs
 
-        return result
+        return (
+            ''.join(x[0] for x in pairs),
+            ''.join(x[1] for x in reversed(pairs)),
+        )
 
     def colorize(self, obj, context_color_tag=None):
         """
