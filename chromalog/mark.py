@@ -35,3 +35,49 @@ class Mark(ColorizableMixin):
 
     def __unicode__(self):
         return unicode(self.obj)
+
+
+def success(obj):
+    """
+    A convenience helper method that marks an object with the `'success'` color
+    tag.
+
+    :param obj: The object the mark.
+    :returns: A :class:`Mark<chromalog.mark.Mark>` instance.
+
+    >>> success(42).color_tag
+    'success'
+    """
+    return Mark(obj, color_tag='success')
+
+
+def error(obj):
+    """
+    A convenience helper method that marks an object with the `'error'` color
+    tag.
+
+    :param obj: The object the mark.
+    :returns: A :class:`Mark<chromalog.mark.Mark>` instance.
+
+    >>> error(42).color_tag
+    'error'
+    """
+    return Mark(obj, color_tag='error')
+
+
+def success_if(obj, condition):
+    """
+    A convenience helper method that marks an object with the `'success'` color
+    tag if `condition` is truthy, and with the `'error'` color tag otherwise.
+
+    :param obj: The object the mark.
+    :param condition: The condition to verify.
+    :returns: A :class:`Mark<chromalog.mark.Mark>` instance.
+
+    >>> success_if(42, True).color_tag
+    'success'
+
+    >>> success_if(42, False).color_tag
+    'error'
+    """
+    return Mark(obj, color_tag='success' if condition else 'error')
