@@ -10,7 +10,7 @@ from functools import partial
 from contextlib import contextmanager
 
 from .colorizer import Colorizer
-from .important import Important as hl
+from .mark import Mark
 
 
 class ColorizingFormatter(logging.Formatter):
@@ -50,7 +50,7 @@ class ColorizingFormatter(logging.Formatter):
             record.threadName = colorizer.colorize(record.threadName)
 
             if message_color_tag:
-                message = colorizer.colorize(hl(
+                message = colorizer.colorize(Mark(
                     record.getMessage(),
                     color_tag=message_color_tag,
                 ))
@@ -158,7 +158,7 @@ class ColorizingStreamHandler(logging.StreamHandler):
                         record,
                     )
                 else:
-                    setattr(record, attribute, hl(
+                    setattr(record, attribute, Mark(
                         getattr(record, attribute),
                         color_tag=self._color_tag_from_record(
                             color_tag,

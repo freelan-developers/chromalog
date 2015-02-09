@@ -8,7 +8,7 @@ from chromalog.colorizer import (
     Colorizer,
     ColorizableMixin,
 )
-from chromalog.important import Important as hl
+from chromalog.mark import Mark
 
 from .common import repeat_for_values
 
@@ -29,7 +29,7 @@ class ColorizerTests(TestCase):
         })
         self.assertEqual(
             '[{}]'.format(value),
-            colorizer.colorize(hl(value, 'a')),
+            colorizer.colorize(Mark(value, 'a')),
         )
 
     @repeat_for_values()
@@ -40,7 +40,7 @@ class ColorizerTests(TestCase):
         })
         self.assertEqual(
             '[<{}>]'.format(value),
-            colorizer.colorize(hl(hl(value, 'b'), 'a')),
+            colorizer.colorize(Mark(Mark(value, 'b'), 'a')),
         )
 
     @repeat_for_values()
@@ -51,7 +51,7 @@ class ColorizerTests(TestCase):
         })
         self.assertEqual(
             '[<{}>]'.format(value),
-            colorizer.colorize(hl(value, ['a', 'b'])),
+            colorizer.colorize(Mark(value, ['a', 'b'])),
         )
 
     @repeat_for_values()
@@ -63,7 +63,7 @@ class ColorizerTests(TestCase):
         self.assertEqual(
             '><[{}]><'.format(value),
             colorizer.colorize(
-                hl(value, 'a'),
+                Mark(value, 'a'),
                 context_color_tag='b',
             ),
         )
@@ -82,7 +82,7 @@ class ColorizerTests(TestCase):
         self.assertEqual(
             '><[({})]><'.format(value),
             colorizer.colorize(
-                hl(value, ['a', 'b']),
+                Mark(value, ['a', 'b']),
                 context_color_tag='c',
             ),
         )
@@ -101,7 +101,7 @@ class ColorizerTests(TestCase):
         self.assertEqual(
             '><[({})]><'.format(value),
             colorizer.colorize(
-                hl(hl(value, 'b'), 'a'),
+                Mark(Mark(value, 'b'), 'a'),
                 context_color_tag='c',
             ),
         )
@@ -119,7 +119,7 @@ class ColorizerTests(TestCase):
                 'my_tag': ('START_MARK', 'STOP_MARK'),
             },
         )
-        result = colorizer.colorize(hl('hello', color_tag='my_tag'))
+        result = colorizer.colorize(Mark('hello', color_tag='my_tag'))
         self.assertEqual('START_MARKhelloSTOP_MARK', result)
 
     def test_colorizer_colorizes_with_known_color_tag_and_default(self):
@@ -130,7 +130,7 @@ class ColorizerTests(TestCase):
             },
             default_color_tag='default',
         )
-        result = colorizer.colorize(hl('hello', color_tag='my_tag'))
+        result = colorizer.colorize(Mark('hello', color_tag='my_tag'))
         self.assertEqual('START_MARKhelloSTOP_MARK', result)
 
     def test_colorizer_doesnt_colorize_with_unknown_color_tag(self):
@@ -139,7 +139,7 @@ class ColorizerTests(TestCase):
                 'my_tag': ('START_MARK', 'STOP_MARK'),
             },
         )
-        result = colorizer.colorize(hl('hello', color_tag='my_unknown_tag'))
+        result = colorizer.colorize(Mark('hello', color_tag='my_unknown_tag'))
         self.assertEqual('hello', str(result))
 
     def test_colorizer_colorizes_with_unknown_color_tag_and_default(self):
@@ -150,5 +150,5 @@ class ColorizerTests(TestCase):
             },
             default_color_tag='default',
         )
-        result = colorizer.colorize(hl('hello', color_tag='my_unknown_tag'))
+        result = colorizer.colorize(Mark('hello', color_tag='my_unknown_tag'))
         self.assertEqual('START_DEFAULT_MARKhelloSTOP_DEFAULT_MARK', result)

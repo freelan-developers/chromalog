@@ -10,14 +10,13 @@ from logging import (
     DEBUG,
 )
 from mock import (
-    Mock,
     MagicMock,
     patch,
 )
 
 from chromalog import basicConfig
 from chromalog.colorizer import GenericColorizer
-from chromalog.important import Important as hl
+from chromalog.mark import Mark
 from chromalog.log import (
     ColorizingFormatter,
     ColorizingStreamHandler,
@@ -139,7 +138,7 @@ class LogTests(TestCase):
             pathname='my_path',
             lineno=42,
             msg='%s + %s gives %s',
-            args=(4, 5, hl(4 + 5, color_tag='bracket'),),
+            args=(4, 5, Mark(4 + 5, color_tag='bracket'),),
             exc_info=None,
         )
 
@@ -177,7 +176,7 @@ class LogTests(TestCase):
             pathname='my_path',
             lineno=42,
             msg='%s + %s gives %s',
-            args=(4, 5, hl(4 + 5, color_tag='bracket'),),
+            args=(4, 5, Mark(4 + 5, color_tag='bracket'),),
             exc_info=None,
         )
 
@@ -212,7 +211,7 @@ class LogTests(TestCase):
             pathname='my_path',
             lineno=42,
             msg='%s + %s gives %s',
-            args=(4, 5, hl(4 + 5, color_tag='bracket'),),
+            args=(4, 5, Mark(4 + 5, color_tag='bracket'),),
             exc_info=None,
         )
 
@@ -240,7 +239,7 @@ class LogTests(TestCase):
             pathname='my_path',
             lineno=42,
             msg='%s + %s gives %s',
-            args=(4, 5, hl(4 + 5, color_tag='bracket'),),
+            args=(4, 5, Mark(4 + 5, color_tag='bracket'),),
             exc_info=None,
         )
 
@@ -268,7 +267,7 @@ class LogTests(TestCase):
             pathname='my_path',
             lineno=42,
             msg='%s + %s gives %s',
-            args=(4, 5, hl(4 + 5, color_tag='bracket'),),
+            args=(4, 5, Mark(4 + 5, color_tag='bracket'),),
             exc_info=None,
         )
 
@@ -301,7 +300,7 @@ class LogTests(TestCase):
             pathname='my_path',
             lineno=42,
             msg='%s + %s gives %s',
-            args=(4, 5, hl(4 + 5, color_tag='bracket'),),
+            args=(4, 5, Mark(4 + 5, color_tag='bracket'),),
             exc_info=None,
         )
 

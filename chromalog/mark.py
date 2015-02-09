@@ -5,18 +5,18 @@ Mark log entries as important.
 from .colorizer import ColorizableMixin
 
 
-class Important(ColorizableMixin):
+class Mark(ColorizableMixin):
     """
-    Wraps any object an mark it as important for logging output.
+    Wraps any object an mark it for colored output.
     """
-    def __init__(self, obj, color_tag='important'):
+    def __init__(self, obj, color_tag):
         """
-        Mark `obj` as important.
+        Mark `obj`.
 
-        :param obj: The object to mark as being important.
-        :param color_tag: The color tag to use.
+        :param obj: The object to mark for colored output.
+        :param color_tag: The color tag to use for coloring.
         """
-        if isinstance(obj, Important):
+        if isinstance(obj, Mark):
             if isinstance(color_tag, basestring):
                 color_tag = [color_tag]
 
@@ -27,7 +27,7 @@ class Important(ColorizableMixin):
 
             obj = obj.obj
 
-        super(Important, self).__init__(color_tag=color_tag)
+        super(Mark, self).__init__(color_tag=color_tag)
         self.obj = obj
 
     def __str__(self):
