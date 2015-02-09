@@ -65,13 +65,14 @@ def error(obj):
     return Mark(obj, color_tag='error')
 
 
-def success_if(obj, condition):
+def success_if(obj, condition=None):
     """
     A convenience helper method that marks an object with the `'success'` color
     tag if `condition` is truthy, and with the `'error'` color tag otherwise.
 
     :param obj: The object the mark.
-    :param condition: The condition to verify.
+    :param condition: The condition to verify. If `condition` is :const:`None`,
+        then `obj` is evaluated instead.
     :returns: A :class:`Mark<chromalog.mark.Mark>` instance.
 
     >>> success_if(42, True).color_tag
@@ -79,5 +80,14 @@ def success_if(obj, condition):
 
     >>> success_if(42, False).color_tag
     'error'
+
+    >>> success_if(42).color_tag
+    'success'
+
+    >>> success_if(0).color_tag
+    'error'
     """
+    if condition is None:
+        condition = obj
+
     return Mark(obj, color_tag='success' if condition else 'error')
