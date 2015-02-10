@@ -16,4 +16,4 @@ def repeat_for_values(values=None):
             "none": None,
         }
 
-    return parameterized.expand(values.items())
+    return parameterized.expand(list(values.items()))

@@ -25,6 +25,8 @@ highlight important elements of a given log entry.
     ]),
     install_requires=[
         'colorama==0.3.3',
+        'future==0.14.3',
+        'six>=1.9.0,<2',
     ],
     test_suite='tests',
     classifiers=[

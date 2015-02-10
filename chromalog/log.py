@@ -1,6 +1,7 @@
 """
 Log-related functions and structures.
 """
+from builtins import map
 
 import sys
 import logging
@@ -18,19 +19,9 @@ class ColorizingFormatter(logging.Formatter):
     A formatter that colorize its output.
     """
 
-    def format(self, record):
-        """
-        Colorize the arguments of a record.
-
-        :record: A `LogRecord` instance.
-        :returns: The colorized formatted string.
-
-        .. note:: The `record` object must have a `colorizer` attribute to be
-        use for colorizing the formatted string. If no such attribute is found,
-        the default non-colorized behaviour is used instead.
-        """
-        colorizer = getattr(record, 'colorizer', None)
-        message_color_tag = getattr(record, 'message_color_tag', None)
+    @contextmanager
+    def _patch_record(self, record, colorizer, message_color_tag):
+        save_dict = record.__dict__.copy()
 
         if colorizer:
             record.args = tuple(map(
@@ -56,7 +47,27 @@ class ColorizingFormatter(logging.Formatter):
                 ))
                 record.getMessage = lambda: message
 
-        return super(ColorizingFormatter, self).format(record)
+        try:
+            yield
+        finally:
+            record.__dict__ = save_dict
+
+    def format(self, record):
+        """
+        Colorize the arguments of a record.
+
+        :record: A `LogRecord` instance.
+        :returns: The colorized formatted string.
+
+        .. note:: The `record` object must have a `colorizer` attribute to be
+        use for colorizing the formatted string. If no such attribute is found,
+        the default non-colorized behaviour is used instead.
+        """
+        colorizer = getattr(record, 'colorizer', None)
+        message_color_tag = getattr(record, 'message_color_tag', None)
+
+        with self._patch_record(record, colorizer, message_color_tag):
+            return super(ColorizingFormatter, self).format(record)
 
 
 class ColorizingStreamHandler(logging.StreamHandler):
@@ -67,8 +78,8 @@ class ColorizingStreamHandler(logging.StreamHandler):
     _RECORD_ATTRIBUTE_NAME = 'colorizer'
     default_attributes_map = {
         'name': 'important',
-        'levelname': lambda record: record.levelname.lower(),
-        'message': lambda record: record.levelname.lower(),
+        'levelname': lambda record: str(record.levelname).lower(),
+        'message': lambda record: str(record.levelname).lower(),
     }
 
     @staticmethod
@@ -151,7 +162,7 @@ class ColorizingStreamHandler(logging.StreamHandler):
         Format a `LogRecord` and prints it to the associated stream.
         """
         with self.__bind_to_record(record):
-            for attribute, color_tag in self.attributes_map.iteritems():
+            for attribute, color_tag in self.attributes_map.items():
                 if attribute == 'message':
                     record.message_color_tag = self._color_tag_from_record(
                         color_tag,

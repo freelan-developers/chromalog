@@ -1,6 +1,7 @@
 """
 Test colorizers.
 """
+from builtins import str
 
 from unittest import TestCase
 

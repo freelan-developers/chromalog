@@ -1,6 +1,7 @@
 """
 Colorizing functions and structures.
 """
+from builtins import object
 
 from colorama import (
     Fore,
@@ -45,7 +46,7 @@ class GenericColorizer(object):
         self.default_color_tag = default_color_tag
 
     def _get_color_pair(self, color_tag, context_color_tag=None):
-        if isinstance(color_tag, basestring):
+        if isinstance(color_tag, str):
             pair = self.color_map.get(color_tag)
 
             if pair:

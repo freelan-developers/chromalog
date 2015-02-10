@@ -1,6 +1,8 @@
 """
 Mark log entries as important.
 """
+from builtins import str
+from six import string_types
 
 from .colorizer import ColorizableMixin
 
@@ -17,10 +19,10 @@ class Mark(ColorizableMixin):
         :param color_tag: The color tag to use for coloring.
         """
         if isinstance(obj, Mark):
-            if isinstance(color_tag, basestring):
+            if isinstance(color_tag, string_types):
                 color_tag = [color_tag]
 
-            if isinstance(obj.color_tag, basestring):
+            if isinstance(obj.color_tag, string_types):
                 color_tag.append(obj.color_tag)
             else:
                 color_tag.extend(obj.color_tag)
@@ -32,9 +34,6 @@ class Mark(ColorizableMixin):
 
     def __str__(self):
         return str(self.obj)
-
-    def __unicode__(self):
-        return unicode(self.obj)
 
 
 def success(obj):
