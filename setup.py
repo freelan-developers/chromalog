@@ -8,16 +8,22 @@ setup(
     url='http://chromalog.readthedocs.org/en/latest/index.html',
     author='Julien Kauffmann',
     author_email='julien.kauffmann@freelan.org',
+    maintainer='Julien Kauffmann',
+    maintainer_email='julien.kauffmann@freelan.org',
     license='MIT',
     version=open('VERSION').read().strip(),
     description=(
-        "Enhance Python with colored logging"
+        "A non-intrusive way to use colors in your logs and generic output."
     ),
     long_description="""\
-Default Python logging is monochromatic and boring.
+Chromalog integrates seemlessly in any Python project and allows the use of
+colors in log messages and generic output easily. It is based on colorama and
+so works on both Windows and *NIX platforms. Chromalog is able to detect
+without any configuration if the associated output stream has color
+capabilities and can fall back to the default monochromatic logging.
 
-Chromalog enhances it with level/based colored loggers and the ability to
-highlight important elements of a given log entry.
+Chromalog also offer helpers to easily highlight some important parts of a log
+message.
 """,
     packages=find_packages(exclude=[
         'tests',
@@ -31,13 +37,15 @@ highlight important elements of a given log entry.
     test_suite='tests',
     classifiers=[
         'Intended Audience :: Developers',
-        'Intended Audience :: System Administrators',
-        'Operating System :: MacOS :: MacOS X',
-        'Operating System :: Microsoft :: Windows',
-        'Operating System :: POSIX',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
         'Topic :: Software Development',
+        'Topic :: Software Development :: Libraries :: Python Modules',
         'License :: OSI Approved :: MIT License',
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
     ],
 )
