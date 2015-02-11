@@ -42,5 +42,28 @@ Which produces the following output:
 .. image:: _static/fast-setup.png
    :align: center
 
+It's as simple as it gets !
+
+Marking log objects
+-------------------
+
+While **Chromalog** has the ability to color entire log lines, it can also mark some specific log elements to highlight them in the output.
+
+A good example of that could be:
+
+.. literalinclude:: ../../samples/highlighting.py
+   :language: python
+   :linenos:
+
+Which produces the following output:
+
+.. image:: _static/highlighting.png
+   :align: center
+
+Note what happens when we redirect the output to a file:
+
+.. image:: _static/highlighting-fallback.png
+   :align: center
+
 .. toctree::
    :maxdepth: 2

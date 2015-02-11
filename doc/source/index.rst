@@ -12,6 +12,11 @@ Chromalog can detect whether the associated output stream is color-capable and
 even has a fallback mechanism: if color is not supported, your log will look no
 worse than it was before you colorized it.
 
+Using **Chromalog**, getting a logging-system that looks like this is a breeze:
+
+.. image:: _static/home-sample.png
+    :align: center
+
 Its use is simple and straightforward:
 
 .. code-block:: python
@@ -19,11 +24,6 @@ Its use is simple and straightforward:
    from chromalog.mark import important
 
    logger.info("Connected as %s for 2 hours.", important(username))
-
-And here is what a more complex usage scenario might look like:
-
-.. image:: _static/home-sample.png
-    :align: center
 
 Ready to add some colors in your life ? :ref:`Get started <quickstart>` or
 check out :ref:`api` !
