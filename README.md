@@ -9,8 +9,20 @@
 
 # chromalog
 
-Enhance Python logging mechanism with colors and the ability to highlight part
-of the logged output.
+Chromalog is a Python library that eases the use of colors in Python logging.
 
-**chromalog** works on all main platforms and is able to detect whether the
-displaying terminal actually has color support.
+It integrates seamlessly into any Python 2 or Python 3 project. Based on colorama, it works on both Windows and *NIX platforms.
+
+Chromalog can detect whether the associated output stream is color-capable and even has a fallback mechanism: if color is not supported, your log will look no worse than it was before you colorized it.
+
+Using Chromalog, getting a logging-system that looks like this is a breeze:
+
+[![home-sample](doc/source/_static/home-sample.png)]
+
+Its use is simple and straightforward:
+
+    from chromalog.mark import important
+
+    logger.info("Connected as %s for 2 hours.", important(username))
+    
+Ready to add some colors in your life ? Check out [Chromalog’s documentation](http://chromalog.readthedocs.org/en/latest/index.html) !
