@@ -7,17 +7,17 @@
 [![GitHub Tag](https://img.shields.io/github/tag/freelan-developers/chromalog.svg)](https://github.com/freelan-developers/chromalog)
 [![Latest Release](https://img.shields.io/pypi/v/chromalog.svg)](https://pypi.python.org/pypi/chromalog)
 
-# chromalog
+# Chromalog
 
-Chromalog is a Python library that eases the use of colors in Python logging.
+**Chromalog** is a Python library that eases the use of colors in Python logging.
 
 It integrates seamlessly into any Python 2 or Python 3 project. Based on colorama, it works on both Windows and *NIX platforms.
 
-Chromalog can detect whether the associated output stream is color-capable and even has a fallback mechanism: if color is not supported, your log will look no worse than it was before you colorized it.
+**Chromalog** can detect whether the associated output stream is color-capable and even has a fallback mechanism: if color is not supported, your log will look no worse than it was before you colorized it.
 
-Using Chromalog, getting a logging-system that looks like this is a breeze:
+Using **Chromalog**, getting a logging-system that looks like this is a breeze:
 
-[![home-sample](doc/source/_static/home-sample.png)]
+![home-sample](doc/source/_static/home-sample.png)
 
 Its use is simple and straightforward:
 
