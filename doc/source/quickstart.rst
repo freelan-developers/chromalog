@@ -29,7 +29,11 @@ non-colorizing behavior.
 Fast setup
 ----------
 
-**Chromalog** provides a :py:func:`basicConfig <chromalog.basicConfig>` function, very similar to :py:func:`logging.basicConfig` that quickly sets up the root logger, but using a :py:class:`ColorizingStreamHandler <chromalog.log.ColorizingStreamHandler>` and a :py:class:`ColorizingFormatter <chromalog.log.ColorizingFormatter>` instead.
+**Chromalog** provides a :py:func:`basicConfig <chromalog.basicConfig>`
+function, very similar to :py:func:`logging.basicConfig` that quickly sets up
+the root logger, but using a :py:class:`ColorizingStreamHandler
+<chromalog.log.ColorizingStreamHandler>` and a :py:class:`ColorizingFormatter
+<chromalog.log.ColorizingFormatter>` instead.
 
 It can be used like so to setup logging in a Python project:
 
@@ -66,7 +70,8 @@ Note what happens when we redirect the output to a file:
 .. image:: _static/highlighting-fallback.png
    :align: center
 
-As you can see, **Chromalog** automatically detected that the output stream wasn't color-capable and disabled automatically the colorizing. Awesome !
+As you can see, **Chromalog** automatically detected that the output stream
+wasn't color-capable and disabled automatically the colorizing. Awesome !
 
 .. toctree::
    :maxdepth: 2
