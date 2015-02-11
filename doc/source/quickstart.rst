@@ -47,7 +47,8 @@ It's as simple as it gets !
 Marking log objects
 -------------------
 
-While **Chromalog** has the ability to color entire log lines, it can also mark some specific log elements to highlight them in the output.
+While **Chromalog** has the ability to color entire log lines, it can also mark
+some specific log elements to highlight them in the output.
 
 A good example of that could be:
 
@@ -64,6 +65,8 @@ Note what happens when we redirect the output to a file:
 
 .. image:: _static/highlighting-fallback.png
    :align: center
+
+As you can see, **Chromalog** automatically detected that the output stream wasn't color-capable and disabled automatically the colorizing. Awesome !
 
 .. toctree::
    :maxdepth: 2
