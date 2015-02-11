@@ -64,6 +64,20 @@ def error(obj):
     return Mark(obj, color_tag='error')
 
 
+def important(obj):
+    """
+    A convenience helper method that marks an object with the `'important'`
+    color tag.
+
+    :param obj: The object the mark.
+    :returns: A :class:`Mark<chromalog.mark.Mark>` instance.
+
+    >>> important(42).color_tag
+    'important'
+    """
+    return Mark(obj, color_tag='important')
+
+
 def success_if(obj, condition=None):
     """
     A convenience helper method that marks an object with the `'success'` color
