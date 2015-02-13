@@ -6,7 +6,7 @@ colors in Python logging.
 
 It integrates seamlessly into any Python 2 or Python 3 project. Based on
 `colorama <https://pypi.python.org/pypi/colorama>`_, it works on both Windows
-and \*NIX platforms.
+and \*NIX platforms and is highly configurable.
 
 Chromalog can detect whether the associated output stream is color-capable and
 even has a fallback mechanism: if color is not supported, your log will look no
@@ -36,6 +36,7 @@ Table of contents
 
    installation
    quickstart
+   advanced
    api
 
 

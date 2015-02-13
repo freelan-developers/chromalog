@@ -1,5 +1,5 @@
 """
-Mark log entries as important.
+Mark log entries.
 """
 from builtins import str
 from six import string_types
@@ -9,7 +9,7 @@ from .colorizer import ColorizableMixin
 
 class Mark(ColorizableMixin):
     """
-    Wraps any object an mark it for colored output.
+    Wraps any object and mark it for colored output.
     """
     def __init__(self, obj, color_tag):
         """
@@ -21,7 +21,7 @@ class Mark(ColorizableMixin):
             into a single-element list automatically.
 
         .. note:: Nested :class:`chromalog.mark.Mark` objects are flattened
-            automatically and their `color_tag` are appended.
+            automatically and their `color_tag`s are appended.
 
         >>> Mark(42, 'a').color_tag
         ['a']

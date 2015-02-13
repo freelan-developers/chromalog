@@ -3,9 +3,16 @@
 Chromalog's API
 ===============
 
-Hey.
+.. automodule:: chromalog
+   :members:
 
-.. autoclass:: chromalog.log.ColorizingStreamHandler
+.. automodule:: chromalog.log
+   :members:
+
+.. automodule:: chromalog.colorizer
+   :members:
+
+.. automodule:: chromalog.mark
    :members:
 
 .. toctree::

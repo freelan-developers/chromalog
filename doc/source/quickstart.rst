@@ -73,5 +73,13 @@ Note what happens when we redirect the output to a file:
 As you can see, **Chromalog** automatically detected that the output stream
 wasn't color-capable and disabled automatically the colorizing. Awesome !
 
+Checkout :ref:`marking_functions` for the complete list of available marking
+functions.
+
+What's next ?
+-------------
+
+Want to learn more about **Chromalog** ? Go read :ref:`advanced` !
+
 .. toctree::
    :maxdepth: 2
