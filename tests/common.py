@@ -17,3 +17,14 @@ def repeat_for_values(values=None):
         }
 
     return parameterized.expand(list(values.items()))
+
+
+def repeat_for_integral_values(values=None):
+    if not values:
+        values = {
+            "integers": 42,
+            "floats": 3.14,
+            "booleans": True,
+        }
+
+    return parameterized.expand(list(values.items()))

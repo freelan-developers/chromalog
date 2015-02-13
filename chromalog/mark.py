@@ -35,6 +35,12 @@ class Mark(ColorizableMixin):
     def __str__(self):
         return str(self.obj)
 
+    def __int__(self):
+        return int(self.obj)
+
+    def __float__(self):
+        return float(self.obj)
+
 
 def success(obj):
     """
