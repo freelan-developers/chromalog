@@ -180,7 +180,9 @@ class GenericColorizer(object):
             get_color_pair(['a'], 'b')
         ('><[', ']><')
         """
-        pairs = filter(None, (self.color_map.get(tag) for tag in color_tag))
+        pairs = list(
+            filter(None, (self.color_map.get(tag) for tag in color_tag))
+        )
 
         if not pairs:
             pair = self.color_map.get(self.default_color_tag)
