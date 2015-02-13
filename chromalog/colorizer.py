@@ -45,20 +45,34 @@ class GenericColorizer(object):
         self.color_map = color_map or self.default_color_map
         self.default_color_tag = default_color_tag
 
-    def _get_color_pair(self, color_tag, context_color_tag=None):
-        if isinstance(color_tag, str):
-            pair = self.color_map.get(color_tag)
+    def get_color_pair(self, color_tag, context_color_tag=None):
+        """
+        Get the color pairs for the specified `color_tag` and
+        `context_color_tag`.
 
-            if pair:
-                pairs = [pair]
-            else:
-                pairs = []
-        else:
-            pairs = (
-                self.color_map.get(tag)
-                for tag in color_tag
-            )
-            pairs = [pair for pair in pairs if pair is not None]
+        :param color: A list of color tags.
+        :param context_color_tag: A color tag to use as a context.
+        :returns: A pair of color sequences.
+
+        >>> Colorizer({}).get_color_pair(['a'])
+        ('', '')
+
+        >>> Colorizer({'a': ('[', ']')}).get_color_pair(['a'])
+        ('[', ']')
+
+        >>> Colorizer({'a': ('[', ']'), 'b': ('<', '>')}).\
+            get_color_pair(['a', 'b'])
+        ('[<', '>]')
+
+        >>> Colorizer({'a': ('[', ']'), 'b': ('<', '>')}, 'b').\
+            get_color_pair(['c'])
+        ('<', '>')
+
+        >>> Colorizer({'a': ('[', ']'), 'b': ('<', '>')}).\
+            get_color_pair(['a'], 'b')
+        ('><[', ']><')
+        """
+        pairs = filter(None, (self.color_map.get(tag) for tag in color_tag))
 
         if not pairs:
             pair = self.color_map.get(self.default_color_tag)

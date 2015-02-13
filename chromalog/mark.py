@@ -39,15 +39,24 @@ class Mark(ColorizableMixin):
             color_tag = [color_tag]
 
         if isinstance(obj, Mark):
-            if isinstance(obj.color_tag, string_types):
-                color_tag.append(obj.color_tag)
-            else:
-                color_tag.extend(obj.color_tag)
-
+            color_tag.extend(obj.color_tag)
             obj = obj.obj
 
         super(Mark, self).__init__(color_tag=color_tag)
         self.obj = obj
+
+    def __repr__(self):
+        """
+        Gives a representation of the marked object.
+
+        >>> repr(Mark('a', 'b'))
+        "Mark('a', ['b'])"
+        """
+        return '{klass}({obj!r}, {color_tag!r})'.format(
+            klass=self.__class__.__name__,
+            obj=self.obj,
+            color_tag=self.color_tag,
+        )
 
     def __str__(self):
         """
