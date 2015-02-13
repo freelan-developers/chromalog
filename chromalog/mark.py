@@ -33,13 +33,40 @@ class Mark(ColorizableMixin):
         self.obj = obj
 
     def __str__(self):
+        """
+        Gives a string representation of the marked object.
+
+        >>> str(Mark("hello", []))
+        'hello'
+        """
         return str(self.obj)
 
     def __int__(self):
+        """
+        Gives an integer representation of the marked object.
+
+        >>> int(Mark(42, []))
+        42
+        """
         return int(self.obj)
 
     def __float__(self):
+        """
+        Gives a float representation of the marked object.
+
+        >>> float(Mark(3.14, []))
+        3.14
+        """
         return float(self.obj)
+
+    def __bool__(self):
+        """
+        Gives a boolean representation of the marked object.
+
+        >>> bool(Mark(True, []))
+        True
+        """
+        return bool(self.obj)
 
 
 def success(obj):
