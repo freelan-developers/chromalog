@@ -16,12 +16,29 @@ class Mark(ColorizableMixin):
         Mark `obj`.
 
         :param obj: The object to mark for colored output.
-        :param color_tag: The color tag to use for coloring.
-        """
-        if isinstance(obj, Mark):
-            if isinstance(color_tag, string_types):
-                color_tag = [color_tag]
+        :param color_tag: The color tag to use for coloring. Can be either a
+            list of a string. If `color_tag` is a string it will be converted
+            into a single-element list automatically.
 
+        .. note:: Nested :class:`chromalog.mark.Mark` objects are flattened
+            automatically and their `color_tag` are appended.
+
+        >>> Mark(42, 'a').color_tag
+        ['a']
+
+        >>> Mark(42, ['a']).color_tag
+        ['a']
+
+        >>> Mark(42, ['a', 'b']).color_tag
+        ['a', 'b']
+
+        >>> Mark(Mark(42, 'c'), ['a', 'b']) == Mark(42, ['a', 'b', 'c'])
+        True
+        """
+        if isinstance(color_tag, string_types):
+            color_tag = [color_tag]
+
+        if isinstance(obj, Mark):
             if isinstance(obj.color_tag, string_types):
                 color_tag.append(obj.color_tag)
             else:
@@ -68,6 +85,29 @@ class Mark(ColorizableMixin):
         """
         return bool(self.obj)
 
+    def __eq__(self, other):
+        """
+        Compares this marked object with another.
+
+        :param other: The other instance to compare with.
+        :returns: True if `other` is a
+        :class:`chromalog.mark.Mark` instance with equal `obj`
+            and `color_tag` members.
+
+        >>> Mark(42, color_tag=[]) == \
+            Mark(42, color_tag=[])
+        True
+
+        >>> Mark(42, color_tag=['a']) == \
+            Mark(42, color_tag=['b'])
+        False
+        """
+        if isinstance(other, self.__class__):
+            return (
+                other.obj == self.obj and
+                other.color_tag == self.color_tag
+            )
+
 
 def success(obj):
     """
@@ -78,7 +118,7 @@ def success(obj):
     :returns: A :class:`Mark<chromalog.mark.Mark>` instance.
 
     >>> success(42).color_tag
-    'success'
+    ['success']
     """
     return Mark(obj, color_tag='success')
 
@@ -92,7 +132,7 @@ def error(obj):
     :returns: A :class:`Mark<chromalog.mark.Mark>` instance.
 
     >>> error(42).color_tag
-    'error'
+    ['error']
     """
     return Mark(obj, color_tag='error')
 
@@ -106,7 +146,7 @@ def important(obj):
     :returns: A :class:`Mark<chromalog.mark.Mark>` instance.
 
     >>> important(42).color_tag
-    'important'
+    ['important']
     """
     return Mark(obj, color_tag='important')
 
@@ -122,16 +162,16 @@ def success_if(obj, condition=None):
     :returns: A :class:`Mark<chromalog.mark.Mark>` instance.
 
     >>> success_if(42, True).color_tag
-    'success'
+    ['success']
 
     >>> success_if(42, False).color_tag
-    'error'
+    ['error']
 
     >>> success_if(42).color_tag
-    'success'
+    ['success']
 
     >>> success_if(0).color_tag
-    'error'
+    ['error']
     """
     if condition is None:
         condition = obj
