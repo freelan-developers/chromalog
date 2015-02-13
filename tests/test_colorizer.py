@@ -6,6 +6,7 @@ from builtins import str
 from unittest import TestCase
 
 from chromalog.colorizer import (
+    ColorizedObject,
     Colorizer,
     ColorizableMixin,
 )
@@ -16,12 +17,12 @@ from .common import repeat_for_values
 
 class ColorizerTests(TestCase):
     @repeat_for_values()
-    def test_colorizer_doesnt_change_unknown_types(self, _, value):
+    def test_colorizer_converts_unknown_types(self, _, value):
         colorizer = Colorizer(color_map={
             'a': ('[', ']'),
             'b': ('<', '>'),
         })
-        self.assertEqual(value, colorizer.colorize(value))
+        self.assertEqual(ColorizedObject(value), colorizer.colorize(value))
 
     @repeat_for_values()
     def test_colorizer_changes_colorizable_types(self, _, value):
@@ -29,19 +30,8 @@ class ColorizerTests(TestCase):
             'a': ('[', ']'),
         })
         self.assertEqual(
-            '[{}]'.format(value),
+            ColorizedObject(Mark(value, 'a'), ('[', ']')),
             colorizer.colorize(Mark(value, 'a')),
-        )
-
-    @repeat_for_values()
-    def test_colorizer_changes_nested_colorizable_types(self, _, value):
-        colorizer = Colorizer(color_map={
-            'a': ('[', ']'),
-            'b': ('<', '>'),
-        })
-        self.assertEqual(
-            '[<{}>]'.format(value),
-            colorizer.colorize(Mark(Mark(value, 'b'), 'a')),
         )
 
     @repeat_for_values()
@@ -51,7 +41,7 @@ class ColorizerTests(TestCase):
             'b': ('<', '>'),
         })
         self.assertEqual(
-            '[<{}>]'.format(value),
+            ColorizedObject(Mark(value, ['a', 'b']), ('[<', '>]')),
             colorizer.colorize(Mark(value, ['a', 'b'])),
         )
 
@@ -62,11 +52,8 @@ class ColorizerTests(TestCase):
             'b': ('<', '>'),
         })
         self.assertEqual(
-            '><[{}]><'.format(value),
-            colorizer.colorize(
-                Mark(value, 'a'),
-                context_color_tag='b',
-            ),
+            ColorizedObject(Mark(value, 'a'), ('><[', ']><')),
+            colorizer.colorize(Mark(value, 'a'), 'b'),
         )
 
     @repeat_for_values()
@@ -81,30 +68,8 @@ class ColorizerTests(TestCase):
             'c': ('<', '>'),
         })
         self.assertEqual(
-            '><[({})]><'.format(value),
-            colorizer.colorize(
-                Mark(value, ['a', 'b']),
-                context_color_tag='c',
-            ),
-        )
-
-    @repeat_for_values()
-    def test_colorizer_changes_colorizable_types_with_nested_and_context(
-        self,
-        _,
-        value,
-    ):
-        colorizer = Colorizer(color_map={
-            'a': ('[', ']'),
-            'b': ('(', ')'),
-            'c': ('<', '>'),
-        })
-        self.assertEqual(
-            '><[({})]><'.format(value),
-            colorizer.colorize(
-                Mark(Mark(value, 'b'), 'a'),
-                context_color_tag='c',
-            ),
+            ColorizedObject(Mark(value, ['a', 'b']), ('><[(', ')]><')),
+            colorizer.colorize(Mark(value, ['a', 'b']), 'c'),
         )
 
     @repeat_for_values({
@@ -121,7 +86,19 @@ class ColorizerTests(TestCase):
             },
         )
         result = colorizer.colorize(Mark('hello', color_tag='my_tag'))
-        self.assertEqual('START_MARKhelloSTOP_MARK', result)
+        self.assertEqual(
+            ColorizedObject(
+                Mark(
+                    'hello',
+                    'my_tag',
+                ),
+                (
+                    'START_MARK',
+                    'STOP_MARK',
+                ),
+            ),
+            result,
+        )
 
     def test_colorizer_colorizes_with_known_color_tag_and_default(self):
         colorizer = Colorizer(
@@ -132,7 +109,19 @@ class ColorizerTests(TestCase):
             default_color_tag='default',
         )
         result = colorizer.colorize(Mark('hello', color_tag='my_tag'))
-        self.assertEqual('START_MARKhelloSTOP_MARK', result)
+        self.assertEqual(
+            ColorizedObject(
+                Mark(
+                    'hello',
+                    'my_tag',
+                ),
+                (
+                    'START_MARK',
+                    'STOP_MARK',
+                ),
+            ),
+            result,
+        )
 
     def test_colorizer_doesnt_colorize_with_unknown_color_tag(self):
         colorizer = Colorizer(
@@ -141,7 +130,10 @@ class ColorizerTests(TestCase):
             },
         )
         result = colorizer.colorize(Mark('hello', color_tag='my_unknown_tag'))
-        self.assertEqual('hello', str(result))
+        self.assertEqual(
+            ColorizedObject(Mark('hello', 'my_unknown_tag'), ('', '')),
+            result,
+        )
 
     def test_colorizer_colorizes_with_unknown_color_tag_and_default(self):
         colorizer = Colorizer(
@@ -152,4 +144,16 @@ class ColorizerTests(TestCase):
             default_color_tag='default',
         )
         result = colorizer.colorize(Mark('hello', color_tag='my_unknown_tag'))
-        self.assertEqual('START_DEFAULT_MARKhelloSTOP_DEFAULT_MARK', result)
+        self.assertEqual(
+            ColorizedObject(
+                Mark(
+                    'hello',
+                    'my_unknown_tag',
+                ),
+                (
+                    'START_DEFAULT_MARK',
+                    'STOP_DEFAULT_MARK',
+                ),
+            ),
+            result,
+        )
