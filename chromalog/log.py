@@ -11,7 +11,7 @@ from functools import partial
 from contextlib import contextmanager
 
 from .colorizer import Colorizer
-from .mark import Mark
+from .mark.objects import Mark
 
 
 class ColorizingFormatter(logging.Formatter):

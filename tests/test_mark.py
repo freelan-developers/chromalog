@@ -61,3 +61,25 @@ class MarkTests(TestCase):
         obj = Mark(Mark(value, ['c', 'd']), ['a', 'b'])
         self.assertEqual(['a', 'b', 'c', 'd'], obj.color_tag)
         self.assertEqual(value, obj.obj)
+
+    @repeat_for_values({
+        'simple_name': 'alpha',
+        'underscore_name': 'alpha_beta',
+    })
+    def test_simple_helpers_with(self, _, name):
+        import chromalog.mark.helpers as helpers
+        helper = getattr(helpers, name)
+        self.assertEqual([name], helper(42).color_tag)
+
+    @repeat_for_values({
+        'simple_name': 'alpha_or_beta',
+        'underscore_name': 'alpha_beta_or_gamma_delta',
+    })
+    def test_conditional_helpers_with(self, _, name):
+        import chromalog.mark.helpers as helpers
+        helper = getattr(helpers, name)
+        true_color_tag, false_color_tag = name.split('_or_')
+        self.assertEqual([true_color_tag], helper(42, True).color_tag)
+        self.assertEqual([false_color_tag], helper(42, False).color_tag)
+        self.assertEqual([true_color_tag], helper(True).color_tag)
+        self.assertEqual([false_color_tag], helper(False).color_tag)

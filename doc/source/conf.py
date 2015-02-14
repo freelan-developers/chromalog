@@ -58,7 +58,10 @@ copyright = u'2015, Julien Kauffmann'
 # built documents.
 #
 # The short X.Y version.
-version = open(os.path.join('..', '..', 'VERSION')).read().strip()
+version = open(
+    os.path.join(os.path.dirname(__file__), '..', '..', 'VERSION'),
+).read().strip()
+
 # The full version, including alpha/beta/rc tags.
 release = version
 

@@ -13,9 +13,14 @@ Marking functions
 
 The :mod:`chromalog.mark` module contains all **Chromalog**'s marking logic.
 
-Its main component is the :class:`Mark <chromalog.mark.Mark>` class which wraps any Python object and associate it with one or several *color tags*.
+Its main component is the :class:`Mark <chromalog.mark.Mark>` class which wraps
+any Python object and associate it with one or several *color tags*.
 
-Those color tags are evaluated during the formatting phase by the :class:`ColorizingFormatter<chromalog.log.ColorizingFormatter>` and transformed into color sequences, as defined in the :class:`ColorizingStreamHandler<chromalog.log.ColorizingStreamHandler>`'s `color_map`.
+Those color tags are evaluated during the formatting phase by the
+:class:`ColorizingFormatter<chromalog.log.ColorizingFormatter>` and transformed
+into color sequences, as defined in the
+:class:`ColorizingStreamHandler<chromalog.log.ColorizingStreamHandler>`'s
+`color_map`.
 
 To decorate a Python object, one can just do:
 
@@ -41,7 +46,8 @@ This would actually have the same effect as:
 
    marked_value = Mark(Mark(value, 'some_other_tag'), 'my_color_tag')
 
-Such nested :class:`Mark <chromalog.mark.Mark>` instances are actually flattened automatically and their color tags appended.
+Such nested :class:`Mark <chromalog.mark.Mark>` instances are actually
+flattened automatically and their color tags appended.
 
 .. warning::
 
@@ -51,7 +57,9 @@ Such nested :class:`Mark <chromalog.mark.Mark>` instances are actually flattened
 
    See :ref:`color_maps` for an example.
 
-**Chromalog** also comes with several built-in helpers which make marking object even more readable. Those helper take a single argument `obj` that is the object to decorate.
+**Chromalog** also comes with several built-in helpers which make marking
+object even more readable. Those helper take a single argument `obj` that is
+the object to decorate.
 
 =========================================== ====================== =====================================
 Helper                                      Associated `color_tag` Associated effet in default color map
@@ -61,7 +69,16 @@ Helper                                      Associated `color_tag` Associated ef
 :func:`important<chromalog.mark.important>` `important`            brighter color
 =========================================== ====================== =====================================
 
-Note that a :func:`chromalog.mark.success_if` function exists that takes an arbitrary object and an optional condition, which results in a call to either :func:`success<chromalog.mark.success>` or :func:`error<chromalog.mark.error>` depending on the condition.
+Note that a :func:`chromalog.mark.success_if` function exists that takes an
+arbitrary object and an optional condition, which results in a call to either
+:func:`success<chromalog.mark.success>` or :func:`error<chromalog.mark.error>`
+depending on the condition.
+
+Custom marking functions
+########################
+
+Defining your custom markers is easy.
+
 
 .. _color_maps:
 

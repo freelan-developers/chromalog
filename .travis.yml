@@ -8,7 +8,7 @@ install:
   - pip install --editable .
 script:
   - pep8 --count chromalog tests
-  - coverage run --source=chromalog setup.py nosetests --with-doctest
+  - coverage run --source=chromalog setup.py nosetests --with-doctest --doctest-extension=rst --tests tests,chromalog,doc/source
   - coverage report -m --fail-under=100
 after_success: coveralls
 notifications:
