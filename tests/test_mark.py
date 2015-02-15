@@ -67,7 +67,7 @@ class MarkTests(TestCase):
         'underscore_name': 'alpha_beta',
     })
     def test_simple_helpers_with(self, _, name):
-        import chromalog.mark.helpers as helpers
+        import chromalog.mark.helpers.simple as helpers
         helper = getattr(helpers, name)
         self.assertEqual([name], helper(42).color_tag)
 
@@ -76,7 +76,7 @@ class MarkTests(TestCase):
         'underscore_name': 'alpha_beta_or_gamma_delta',
     })
     def test_conditional_helpers_with(self, _, name):
-        import chromalog.mark.helpers as helpers
+        import chromalog.mark.helpers.conditional as helpers
         helper = getattr(helpers, name)
         true_color_tag, false_color_tag = name.split('_or_')
         self.assertEqual([true_color_tag], helper(42, True).color_tag)
