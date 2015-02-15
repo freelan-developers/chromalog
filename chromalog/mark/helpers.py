@@ -38,6 +38,8 @@ class SimpleHelpers(object):
             :param obj: The object to mark for coloration.
             :returns: A :class:`Mark<chromalog.mark.objects.Mark>` instance.
 
+            >>> from chromalog.mark.helpers.simple import {color_tag}
+
             >>> {color_tag}(42).color_tag
             ['{color_tag}']
             """.format(color_tag=color_tag)
@@ -104,6 +106,8 @@ class ConditionalHelpers(object):
             :param condition: The condition to verify. If `condition` is
                 :const:`None`, the `obj` is evaluated instead.
             :returns: A :class:`Mark<chromalog.mark.objects.Mark>` instance.
+
+            >>> from chromalog.mark.helpers.conditional import {name}
 
             >>> {name}(42, True).color_tag
             ['{color_tag_true}']

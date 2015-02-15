@@ -19,9 +19,15 @@ Using **Chromalog**, getting a logging-system that looks like this is a breeze:
 
 Its use is simple and straightforward:
 
-.. code-block:: python
+.. testsetup::
 
-   from chromalog.mark import important
+   from logging import getLogger
+   logger = getLogger()
+   username = 'user'
+
+.. testcode::
+
+   from chromalog.mark.helpers.simple import important
 
    logger.info("Connected as %s for 2 hours.", important(username))
 

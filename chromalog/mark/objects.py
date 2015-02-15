@@ -99,16 +99,13 @@ class Mark(ColorizableMixin):
         Compares this marked object with another.
 
         :param other: The other instance to compare with.
-        :returns: True if `other` is a
-        :class:`chromalog.mark.Mark` instance with equal `obj`
-            and `color_tag` members.
+        :returns: True if `other` is a :class:`chromalog.mark.Mark` instance
+            with equal `obj` and `color_tag` members.
 
-        >>> Mark(42, color_tag=[]) == \
-            Mark(42, color_tag=[])
+        >>> Mark(42, color_tag=[]) == Mark(42, color_tag=[])
         True
 
-        >>> Mark(42, color_tag=['a']) == \
-            Mark(42, color_tag=['b'])
+        >>> Mark(42, color_tag=['a']) == Mark(42, color_tag=['b'])
         False
         """
         if isinstance(other, self.__class__):

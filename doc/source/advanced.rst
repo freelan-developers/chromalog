@@ -53,26 +53,78 @@ flattened automatically and their color tags appended.
 
    Be careful when specifying several color tags: their order **matters** !
 
-   Depending on the color sequences of your color map, the formatted result might differ.
+   Depending on the color sequences of your color map, the formatted result
+   might differ.
 
    See :ref:`color_maps` for an example.
 
 **Chromalog** also comes with several built-in helpers which make marking
-object even more readable. Those helper take a single argument `obj` that is
-the object to decorate.
+object even more readable. Those helpers are generated automatically by several
+*magic* modules.
 
-=========================================== ====================== =====================================
-Helper                                      Associated `color_tag` Associated effet in default color map
-------------------------------------------- ---------------------- -------------------------------------
-:func:`success<chromalog.mark.success>`     `success`              green color
-:func:`error<chromalog.mark.error>`         `error`                red color
-:func:`important<chromalog.mark.important>` `important`            brighter color
-=========================================== ====================== =====================================
+Simple helpers
+##############
 
-Note that a :func:`chromalog.mark.success_if` function exists that takes an
-arbitrary object and an optional condition, which results in a call to either
-:func:`success<chromalog.mark.success>` or :func:`error<chromalog.mark.error>`
-depending on the condition.
+Simple helpers are a quick way of marking an object and an efficient way of
+conveying meaning.
+
+You can generate simple helpers by importing them from the
+:mod:`chromalog.mark.helpers.simple` magic module:
+
+.. doctest::
+
+   >>> from chromalog.mark.helpers.simple import important
+
+   >>> important(42).color_tag
+   ['important']
+
+Like :class:`Mark<chromalog.mark.Mark>` instance, you can obviously combine
+several helpers to cumulate the effects.
+
+.. doctest::
+
+   >>> from chromalog.mark.helpers.simple import important, success
+
+   >>> important(success(42)).color_tag
+   ['important', 'success']
+
+If the name of the helper you want to generate is not a suitable python
+identifier, you can use the :func:`chromalog.mark.helpers.simple.make_helper`
+function instead.
+
+Note that, should you need it, documentation is generated for each helper. For
+instance, here is the generated documentation for the
+:func:`chromalog.mark.helpers.simple.success` function:
+
+.. autofunction:: chromalog.mark.helpers.simple.success
+
+Conditional helpers
+###################
+
+Conditional helpers are a quick way of using a header depending on a boolean
+condition.
+
+You can generate conditional helpers by importing them from the
+:mod:`chromalog.mark.helpers.conditional` magic module:
+
+.. doctest::
+
+   >>> from chromalog.mark.helpers.conditional import success_or_error
+
+   >>> success_or_error(42, True).color_tag
+   ['success']
+
+   >>> success_or_error(42, False).color_tag
+   ['error']
+
+.. note::
+
+   The only requirement for the helper is that it must have a name of the form
+   ``a_or_b`` where ``a`` and ``b`` are color tags.
+
+If the name of the helper you want to generate is not a suitable python
+identifier, you can use the
+:func:`chromalog.mark.helpers.conditional.make_helper` function instead.
 
 Custom marking functions
 ########################

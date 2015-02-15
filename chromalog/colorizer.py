@@ -161,24 +161,6 @@ class GenericColorizer(object):
         :param color: A list of color tags.
         :param context_color_tag: A color tag to use as a context.
         :returns: A pair of color sequences.
-
-        >>> Colorizer({}).get_color_pair(['a'])
-        ('', '')
-
-        >>> Colorizer({'a': ('[', ']')}).get_color_pair(['a'])
-        ('[', ']')
-
-        >>> Colorizer({'a': ('[', ']'), 'b': ('<', '>')}).\
-            get_color_pair(['a', 'b'])
-        ('[<', '>]')
-
-        >>> Colorizer({'a': ('[', ']'), 'b': ('<', '>')}, 'b').\
-            get_color_pair(['c'])
-        ('<', '>')
-
-        >>> Colorizer({'a': ('[', ']'), 'b': ('<', '>')}).\
-            get_color_pair(['a'], 'b')
-        ('><[', ']><')
         """
         pairs = list(
             filter(None, (self.color_map.get(tag) for tag in color_tag))

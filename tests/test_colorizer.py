@@ -16,6 +16,42 @@ from .common import repeat_for_values
 
 
 class ColorizerTests(TestCase):
+    def test_colorizer_get_color_pair_not_found(self):
+        colorizer = Colorizer({})
+        self.assertEqual(('', ''), colorizer.get_color_pair(['a']))
+
+    def test_colorizer_get_color_pair_found(self):
+        colorizer = Colorizer({
+            'a': ('[', ']'),
+        })
+        self.assertEqual(('[', ']'), colorizer.get_color_pair(['a']))
+
+    def test_colorizer_get_color_pair_found_double(self):
+        colorizer = Colorizer({
+            'a': ('[', ']'),
+            'b': ('<', '>'),
+        })
+        self.assertEqual(('[<', '>]'), colorizer.get_color_pair(['a', 'b']))
+
+    def test_colorizer_get_color_pair_not_found_with_default(self):
+        colorizer = Colorizer(
+            {
+                'a': ('[', ']'),
+                'b': ('<', '>'),
+            },
+            default_color_tag='b',
+        )
+        self.assertEqual(('<', '>'), colorizer.get_color_pair(['c']))
+
+    def test_colorizer_get_color_pair_found_with_context(self):
+        colorizer = Colorizer(
+            {
+                'a': ('[', ']'),
+                'b': ('<', '>'),
+            },
+        )
+        self.assertEqual(('><[', ']><'), colorizer.get_color_pair(['a'], 'b'))
+
     @repeat_for_values()
     def test_colorizer_converts_unknown_types(self, _, value):
         colorizer = Colorizer(color_map={

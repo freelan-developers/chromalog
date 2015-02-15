@@ -18,7 +18,7 @@ is responsible for writing the log entries to the output stream. It can detect
 whether the associated stream has color capabilities and eventually fallback to
 a non-colored output mechanism. In this case it behaves exactly like a standard
 :py:class:`logging.StreamHandler`. It is associated to a :ref:`color map
-<color_map>` that is passed to every formatter that requests it.
+<color_maps>` that is passed to every formatter that requests it.
 
 The :py:class:`ColorizingFormatter <chromalog.log.ColorizingFormatter>` is
 responsible for adding the color-specific markup in the formatted string. If
