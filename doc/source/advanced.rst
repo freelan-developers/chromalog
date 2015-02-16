@@ -74,9 +74,10 @@ You can generate simple helpers by importing them from the
 
 .. testcode::
 
+   from __future__ import print_function
    from chromalog.mark.helpers.simple import important
 
-   print important(42).color_tag
+   print(important(42).color_tag)
 
 Which gives the following output:
 
@@ -94,9 +95,10 @@ For instance:
 
 .. testcode::
 
+   from __future__ import print_function
    from chromalog.mark.helpers.simple import important, success
 
-   print important(success(42)).color_tag
+   print(important(success(42)).color_tag)
 
 Gives:
 
@@ -125,12 +127,13 @@ You can generate conditional helpers by importing them from the
 
 .. testcode::
 
+   from __future__ import print_function
    from chromalog.mark.helpers.conditional import success_or_error
 
-   print success_or_error(42, True).color_tag
-   print success_or_error(42, False).color_tag
-   print success_or_error(42).color_tag
-   print success_or_error(0).color_tag
+   print(success_or_error(42, True).color_tag)
+   print(success_or_error(42, False).color_tag)
+   print(success_or_error(42).color_tag)
+   print(success_or_error(0).color_tag)
 
 Which gives:
 
@@ -182,6 +185,28 @@ structure:
 That is, each *key* is the color tag, and each *value* is a pair
 ``(start_sequence, stop_sequence)`` of start and stop sequences that will
 surround the decorated value when it is output.
+
+Values are decorated in order with the seqauences that match their associated
+color tags. For instance:
+
+.. testcode::
+
+   from __future__ import print_function
+   from chromalog.mark.helpers.simple import alpha, beta
+   from chromalog.colorizer import GenericColorizer
+
+   colorizer = GenericColorizer(color_map={
+      'alpha': ('[', ']'),
+      'beta': ('{', '}'),
+   })
+
+   print(colorizer.colorize(alpha(beta(42))))
+   print(colorizer.colorize(beta(alpha(42))))
+
+.. testoutput::
+
+   [{42}]
+   {[42]}
 
 For your convenience, **chromalog** ships with two default colorizers:
 
