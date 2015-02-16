@@ -8,8 +8,9 @@ install:
   - pip install --editable .
 script:
   - pep8 --count chromalog tests
-  - sphinx-build -b doctest -W doc/source doc/build/html
   - coverage run --source=chromalog setup.py nosetests --with-doctest --doctest-extension=rst --tests tests,chromalog,doc/source
+  - sphinx-build -b doctest -W doc/source doc/build/html
+  - sphinx-build -b html -W doc/source doc/build/html
   - coverage report -m --fail-under=100
 after_success: coveralls
 notifications:
