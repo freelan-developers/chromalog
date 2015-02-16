@@ -14,40 +14,38 @@ Marking functions
 The :mod:`chromalog.mark` module contains all **Chromalog**'s marking logic.
 
 Its main component is the :class:`Mark <chromalog.mark.Mark>` class which wraps
-any Python object and associate it with one or several *color tags*.
+any Python object and associates it with one or several *color tags*.
 
 Those color tags are evaluated during the formatting phase by the
 :class:`ColorizingFormatter<chromalog.log.ColorizingFormatter>` and transformed
 into color sequences, as defined in the
 :class:`ColorizingStreamHandler<chromalog.log.ColorizingStreamHandler>`'s
-`color_map`.
+:ref:`color map<color_maps>`.
 
 To decorate a Python object, one can just do:
 
-.. code-block:: python
+.. testcode::
 
    from chromalog.mark import Mark
 
-   marked_value = Mark(value, 'my_color_tag')
+   marked_value = Mark('value', 'my_color_tag')
 
 You may define several color tags at once, by specifying a list:
 
-.. code-block:: python
+.. testcode::
 
    from chromalog.mark import Mark
 
-   marked_value = Mark(value, ['my_color_tag', 'some_other_tag'])
+   marked_value = Mark('value', ['my_color_tag', 'some_other_tag'])
 
-This would actually have the same effect as:
+Nested :class:`Mark <chromalog.mark.Mark>` instances are actually flattened
+automatically and their color tags appended.
 
-.. code-block:: python
+.. testcode::
 
    from chromalog.mark import Mark
 
-   marked_value = Mark(Mark(value, 'some_other_tag'), 'my_color_tag')
-
-Such nested :class:`Mark <chromalog.mark.Mark>` instances are actually
-flattened automatically and their color tags appended.
+   marked_value = Mark(Mark('value', 'some_other_tag'), 'my_color_tag')
 
 .. warning::
 
@@ -58,34 +56,52 @@ flattened automatically and their color tags appended.
 
    See :ref:`color_maps` for an example.
 
+Helpers
++++++++
+
 **Chromalog** also comes with several built-in helpers which make marking
-object even more readable. Those helpers are generated automatically by several
+objects even more readable. Those helpers are generated automatically by several
 *magic* modules.
 
 Simple helpers
 ##############
 
-Simple helpers are a quick way of marking an object and an efficient way of
-conveying meaning.
+Simple helpers are a quick way of marking an object and an explicit way of
+highlighting a value.
 
 You can generate simple helpers by importing them from the
-:mod:`chromalog.mark.helpers.simple` magic module:
+:mod:`chromalog.mark.helpers.simple` magic module, like so:
 
-.. doctest::
+.. testcode::
 
-   >>> from chromalog.mark.helpers.simple import important
+   from chromalog.mark.helpers.simple import important
 
-   >>> important(42).color_tag
+   print important(42).color_tag
+
+Which gives the following output:
+
+.. testoutput::
+
    ['important']
 
-Like :class:`Mark<chromalog.mark.Mark>` instance, you can obviously combine
+An helper function with a color tag similar to its name will be generated and
+made accessible transparently.
+
+Like :class:`Mark<chromalog.mark.Mark>` instances, you can obviously combine
 several helpers to cumulate the effects.
 
-.. doctest::
+For instance:
 
-   >>> from chromalog.mark.helpers.simple import important, success
+.. testcode::
 
-   >>> important(success(42)).color_tag
+   from chromalog.mark.helpers.simple import important, success
+
+   print important(success(42)).color_tag
+
+Gives:
+
+.. testoutput::
+
    ['important', 'success']
 
 If the name of the helper you want to generate is not a suitable python
@@ -101,41 +117,131 @@ instance, here is the generated documentation for the
 Conditional helpers
 ###################
 
-Conditional helpers are a quick way of using a header depending on a boolean
-condition.
+Conditional helpers are a quick way of associating a color tag to an object
+depending on a boolean condition.
 
 You can generate conditional helpers by importing them from the
 :mod:`chromalog.mark.helpers.conditional` magic module:
 
-.. doctest::
+.. testcode::
 
-   >>> from chromalog.mark.helpers.conditional import success_or_error
+   from chromalog.mark.helpers.conditional import success_or_error
 
-   >>> success_or_error(42, True).color_tag
+   print success_or_error(42, True).color_tag
+   print success_or_error(42, False).color_tag
+   print success_or_error(42).color_tag
+   print success_or_error(0).color_tag
+
+Which gives:
+
+.. testoutput::
+
    ['success']
-
-   >>> success_or_error(42, False).color_tag
+   ['error']
+   ['success']
    ['error']
 
-.. note::
+.. warning::
 
-   The only requirement for the helper is that it must have a name of the form
+   Automatically generated conditional helpers must have a name of the form
    ``a_or_b`` where ``a`` and ``b`` are color tags.
 
 If the name of the helper you want to generate is not a suitable python
 identifier, you can use the
 :func:`chromalog.mark.helpers.conditional.make_helper` function instead.
 
-Custom marking functions
-########################
+.. note::
 
-Defining your custom markers is easy.
+   If no ``condition`` is specified, then the value itself is evaluated as a
+   boolean value.
 
+   This is useful for outputing exit codes for instance.
+
+Colorizers
+----------
+
+The :class:`GenericColorizer<chromalog.colorizer.GenericColorizer>` class is
+responsible for turning color tags into colors (or decoration sequences).
 
 .. _color_maps:
 
 Color maps
-----------
+++++++++++
+
+To do so, each :class:`GenericColorizer<chromalog.colorizer.GenericColorizer>`
+instance has a ``color_map`` :class:`dictionary<dict>` which has the following
+structure:
+
+.. code-block:: python
+
+   color_map = {
+      'alpha': ('[', ']'),
+      'beta': ('{', '}'),
+   }
+
+That is, each *key* is the color tag, and each *value* is a pair
+``(start_sequence, stop_sequence)`` of start and stop sequences that will
+surround the decorated value when it is output.
+
+For your convenience, **chromalog** ships with two default colorizers:
+
+- :class:`Colorizer<chromalog.colorizer.Colorizer>` which is associated to a
+  color map constitued of color escaping sequences.
+- :class:`MonochromaticColorizer<chromalog.colorizer.MonochromaticColorizer>`
+  which may be used on non color-capable output streams and that only decorates
+  objects marked with the ``'important'`` color tag.
+
+See :ref:`default_color_maps` for a comprehensive list of default color tags
+and their resulting sequences.
+
+Custom colorizers
+#################
+
+One can create its own colorizer by simply deriving from the
+:class:`GenericColorizer<chromalog.colorizer.GenericColorizer>` class and
+defining the ``default_color_map`` class attribute, like so:
+
+.. testcode::
+
+   from chromalog.colorizer import GenericColorizer
+
+   from colorama import (
+      Fore,
+      Back,
+      Style,
+   )
+
+   class MyColorizer(GenericColorizer):
+      default_color_map = {
+         'success': (Fore.GREEN, Style.RESET_ALL),
+      }
+
+.. _default_color_maps:
+
+Default color maps and sequences
+################################
+
+Here is a list of the default color tags and their associated sequences:
+
++-----------------------------------------------------------------------------+-------------+-----------------------------+
+| Colorizer                                                                   | Color tag   | Effect                      |
++-----------------------------------------------------------------------------+-------------+-----------------------------+
+| :class:`Colorizer<chromalog.colorizer.Colorizer>`                           | `debug`     | Light blue color.           |
+|                                                                             +-------------+-----------------------------+
+|                                                                             | `info`      | Default terminal style.     |
+|                                                                             +-------------+-----------------------------+
+|                                                                             | `important` | Brighter output.            |
+|                                                                             +-------------+-----------------------------+
+|                                                                             | `success`   | Green color.                |
+|                                                                             +-------------+-----------------------------+
+|                                                                             | `warning`   | Yellow color.               |
+|                                                                             +-------------+-----------------------------+
+|                                                                             | `error`     | Red color.                  |
+|                                                                             +-------------+-----------------------------+
+|                                                                             | `critical`  | Red background.             |
++-----------------------------------------------------------------------------+-------------+-----------------------------+
+| :class:`MonochromaticColorizer<chromalog.colorizer.MonochromaticColorizer>` | `important` | Value surrounded by ``**``. |
++-----------------------------------------------------------------------------+-------------+-----------------------------+
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3

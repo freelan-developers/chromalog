@@ -222,7 +222,7 @@ class Colorizer(GenericColorizer):
 class MonochromaticColorizer(Colorizer):
     """
     Monochromatic colorizer for non-color-capable streams that only highlights
-    :class:`chromalog.important.Important` objects.
+    :class:`chromalog.mark.Mark` objects with an ``important`` color tag.
     """
     default_color_map = {
         'important': ('**', '**'),

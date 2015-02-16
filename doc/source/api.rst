@@ -16,4 +16,4 @@ Chromalog's API
    :members:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
