@@ -3,6 +3,8 @@ Colorizing functions and structures.
 """
 from builtins import object
 
+from functools import partial
+
 from colorama import (
     Fore,
     Back,
@@ -135,6 +137,65 @@ class ColorizedObject(object):
             )
 
 
+class Printer(object):
+    """
+    Prints colorized message to a stream.
+    """
+
+    def __init__(self, colorizer, stream, context_color_tag=None):
+        """
+        Initialize a printer with the specified ``colorizer`` and ``stream``.
+
+        :param colorizer: The colorizer to use.
+        :param stream: The stream to use.
+        :param context_color_tag: The context color tag to use for messages.
+        """
+        self.colorizer = colorizer
+        self.stream = stream
+        self.context_color_tag = context_color_tag
+
+    def __call__(self, msg, *args, **kwargs):
+        """
+        Prints a message to the associated stream.
+
+        :param msg: The message to print. May contain format sequences as
+            defined by :func:`str.format`.
+        """
+        if self.context_color_tag:
+            from .mark import Mark
+
+            msg = str(
+                self.colorizer.colorize(Mark(msg, self.context_color_tag)),
+            )
+            cfunc = partial(
+                self.colorizer.colorize,
+                context_color_tag=self.context_color_tag,
+            )
+        else:
+            cfunc = self.colorizer.colorize
+
+        args = map(cfunc, args)
+        kwargs = {
+            key: cfunc(value)
+            for key, value in kwargs.items()
+        }
+        self.stream.write(msg.format(*args, **kwargs))
+        self.stream.write('\n')
+
+    def with_context(self, context_color_tag):
+        """
+        Returns a new printer that has the specified context color tag.
+
+        :param context_color_tag: The context color tag to use for messages.
+        :returns: A :class:`chromalog.colorizer.Printer` instance.
+        """
+        return Printer(
+            colorizer=self.colorizer,
+            stream=self.stream,
+            context_color_tag=context_color_tag,
+        )
+
+
 class GenericColorizer(object):
     """
     A class reponsible for colorizing log entries and
@@ -203,6 +264,26 @@ class GenericColorizer(object):
             color_pair = None
 
         return ColorizedObject(obj=obj, color_pair=color_pair)
+
+    def printer(self, stream=None, context_color_tag=None):
+        """
+        Get a :class:`chromalog.colorizer.Printer` associated to this colorizer
+        and the given stream.
+
+        :param stream: The stream to associate to the printer. If set to
+            :const:`None`, :attribute:`sys.stdout` will be used.
+        :param context_color_tag: The context color tag to use for messages.
+        :returns: A :class:`chromalog.colorizer.Printer` instance.
+
+        >>> colorizer = GenericColorizer({'a': ('', '')})
+        >>> colorizer.printer().colorizer == colorizer
+        True
+        """
+        return Printer(
+            colorizer=self,
+            stream=stream,
+            context_color_tag=context_color_tag,
+        )
 
 
 class Colorizer(GenericColorizer):

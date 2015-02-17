@@ -5,6 +5,11 @@ from builtins import str
 
 from unittest import TestCase
 
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
 from chromalog.colorizer import (
     ColorizedObject,
     Colorizer,
@@ -193,3 +198,35 @@ class ColorizerTests(TestCase):
             ),
             result,
         )
+
+    def test_printer(self):
+        colorizer = Colorizer(color_map={
+            'a': ('[', ']'),
+            'b': ('(', ')'),
+            'c': ('<', '>'),
+        })
+        stream = StringIO()
+        printer = colorizer.printer(stream)
+
+        printer(
+            'this {} a {value} !',
+            'is',
+            value=Mark('value', ['a', 'b', 'c']),
+        )
+        self.assertEqual('this is a [(<value>)] !\n', stream.getvalue())
+
+    def test_printer_with_context(self):
+        colorizer = Colorizer(color_map={
+            'a': ('[', ']'),
+            'b': ('(', ')'),
+            'c': ('<', '>'),
+        })
+        stream = StringIO()
+        printer = colorizer.printer(stream)
+
+        printer.with_context('c')(
+            'this {} a {value} !',
+            'is',
+            value=Mark('value', ['a', 'b']),
+        )
+        self.assertEqual('<this is a ><[(value)]>< !>\n', stream.getvalue())
