@@ -50,7 +50,7 @@ This should not raise any error (especially not an
 :py:exc:`ImportError`).
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
 What's next ?
 -------------

@@ -82,4 +82,4 @@ What's next ?
 Want to learn more about **Chromalog** ? Go read :ref:`advanced` !
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
