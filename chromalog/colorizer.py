@@ -271,7 +271,7 @@ class GenericColorizer(object):
         and the given stream.
 
         :param stream: The stream to associate to the printer. If set to
-            :const:`None`, :attribute:`sys.stdout` will be used.
+            :const:`None`, ``sys.stdout`` will be used.
         :param context_color_tag: The context color tag to use for messages.
         :returns: A :class:`chromalog.colorizer.Printer` instance.
 
