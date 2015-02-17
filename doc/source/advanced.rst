@@ -3,6 +3,10 @@
 Advanced usage
 ==============
 
+.. testsetup::
+
+   from __future__ import print_function
+
 We've seen in :ref:`quickstart` how to quickly colorize your logging output.
 But **Chromalog** has much more to offer than just that !
 
@@ -74,7 +78,6 @@ You can generate simple helpers by importing them from the
 
 .. testcode::
 
-   from __future__ import print_function
    from chromalog.mark.helpers.simple import important
 
    print(important(42).color_tag)
@@ -95,7 +98,6 @@ For instance:
 
 .. testcode::
 
-   from __future__ import print_function
    from chromalog.mark.helpers.simple import important, success
 
    print(important(success(42)).color_tag)
@@ -127,7 +129,6 @@ You can generate conditional helpers by importing them from the
 
 .. testcode::
 
-   from __future__ import print_function
    from chromalog.mark.helpers.conditional import success_or_error
 
    print(success_or_error(42, True).color_tag)
@@ -191,7 +192,6 @@ color tags. For instance:
 
 .. testcode::
 
-   from __future__ import print_function
    from chromalog.mark.helpers.simple import alpha, beta
    from chromalog.colorizer import GenericColorizer
 
@@ -203,12 +203,53 @@ color tags. For instance:
    print(colorizer.colorize(alpha(beta(42))))
    print(colorizer.colorize(beta(alpha(42))))
 
+Which gives:
+
 .. testoutput::
 
    [{42}]
    {[42]}
 
-For your convenience, **chromalog** ships with two default colorizers:
+Context colorizing
+++++++++++++++++++
+
+Note that the :func:`colorize<chromalog.colorizer.GenericColorizer.colorize>`
+method takes an optional parameter ``context_color_tag`` which is mainly used
+by the :class:`ColorizingFormatter<chromalog.log.ColorizingFormatter>`
+to colorize subparts of a colorized message.
+
+``context_color_tag`` should match the color tag used to colorize the
+contextual message as a whole. Unless you write your own formatter, you
+shouldn't have to care much about it.
+
+Here is an example on how ``context_color_tag`` modifies the output:
+
+.. testcode::
+
+   from chromalog.mark.helpers.simple import alpha
+   from chromalog.colorizer import GenericColorizer
+
+   colorizer = GenericColorizer(color_map={
+      'alpha': ('[', ']'),
+      'beta': ('{', '}'),
+   })
+
+   print(colorizer.colorize(alpha(42), context_color_tag='beta'))
+
+Which gives:
+
+.. testoutput::
+
+   }{[42]}{
+
+As you can see, the context color tag is first closed then reopened, then the
+usual color tags are used. This behavior is required as it prevents some color
+escaping sequences to persist after the tags get closed on some terminals.
+
+Built-in colorizers
++++++++++++++++++++
+
+**Chromalog** ships with two default colorizers:
 
 - :class:`Colorizer<chromalog.colorizer.Colorizer>` which is associated to a
   color map constitued of color escaping sequences.

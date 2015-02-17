@@ -189,10 +189,11 @@ class GenericColorizer(object):
 
         :param obj: The object to colorize.
         :param context_color_tag: The color tag to use as context.
-        :returns: `obj` is `obj` is not a colorizable object. A colorized
+        :returns: ``obj`` if ``obj`` is not a colorizable object. A colorized
             string otherwise.
 
-        .. note: A colorizable object must have a truthy-`color_tag` attribute.
+        .. note: A colorizable object must have a truthy-``color_tag``
+            attribute.
         """
         color_tag = getattr(obj, 'color_tag', None)
 
