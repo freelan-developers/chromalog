@@ -169,7 +169,18 @@ class ConditionalHelpers(object):
 
 
 simple = SimpleHelpers()
+simple.__doc__ = """
+Pseudo-module that generates simple helpers.
+
+See :class:`SimpleHelpers<chromalog.mark.helpers.SimpleHelpers>`.
+"""
+
 conditional = ConditionalHelpers()
+conditional.__doc__ = """
+Pseudo-module that generates conditional helpers.
+
+See :class:`ConditionalHelpers<chromalog.mark.helpers.ConditionalHelpers>`.
+"""
 
 sys.modules['.'.join([__name__, 'simple'])] = simple
 sys.modules['.'.join([__name__, 'conditional'])] = conditional

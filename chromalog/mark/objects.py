@@ -13,15 +13,17 @@ class Mark(ColorizableMixin):
     """
     def __init__(self, obj, color_tag):
         """
-        Mark `obj`.
+        Mark ``obj`` for coloration.
 
         :param obj: The object to mark for colored output.
         :param color_tag: The color tag to use for coloring. Can be either a
-            list of a string. If `color_tag` is a string it will be converted
+            list of a string. If ``color_tag`` is a string it will be converted
             into a single-element list automatically.
 
         .. note:: Nested :class:`chromalog.mark.Mark` objects are flattened
-            automatically and their `color_tag`s are appended.
+            automatically and their ``color_tag`` are appended.
+
+        >>> from chromalog.mark.objects import Mark
 
         >>> Mark(42, 'a').color_tag
         ['a']
