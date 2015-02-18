@@ -274,10 +274,6 @@ class GenericColorizer(object):
             :const:`None`, ``sys.stdout`` will be used.
         :param context_color_tag: The context color tag to use for messages.
         :returns: A :class:`chromalog.colorizer.Printer` instance.
-
-        >>> colorizer = GenericColorizer({'a': ('', '')})
-        >>> colorizer.printer().colorizer == colorizer
-        True
         """
         return Printer(
             colorizer=self,
