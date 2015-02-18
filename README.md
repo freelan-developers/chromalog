@@ -21,8 +21,8 @@ Using **Chromalog**, getting a logging-system that looks like this is a breeze:
 
 Its use is simple and straightforward:
 
-    from chromalog.mark import important
+    from chromalog.mark.helpers.simple import important
 
     logger.info("Connected as %s for 2 hours.", important(username))
-    
+
 Ready to add some colors in your life ? Check out [Chromalog’s documentation](http://chromalog.readthedocs.org/en/latest/index.html) !
