@@ -2,8 +2,7 @@
 Colorizing functions and structures.
 """
 from builtins import object
-
-from functools import partial
+from six import string_types
 
 from colorama import (
     Fore,
@@ -137,65 +136,6 @@ class ColorizedObject(object):
             )
 
 
-class Printer(object):
-    """
-    Prints colorized message to a stream.
-    """
-
-    def __init__(self, colorizer, stream, context_color_tag=None):
-        """
-        Initialize a printer with the specified ``colorizer`` and ``stream``.
-
-        :param colorizer: The colorizer to use.
-        :param stream: The stream to use.
-        :param context_color_tag: The context color tag to use for messages.
-        """
-        self.colorizer = colorizer
-        self.stream = stream
-        self.context_color_tag = context_color_tag
-
-    def __call__(self, msg, *args, **kwargs):
-        """
-        Prints a message to the associated stream.
-
-        :param msg: The message to print. May contain format sequences as
-            defined by :func:`str.format`.
-        """
-        if self.context_color_tag:
-            from .mark import Mark
-
-            msg = str(
-                self.colorizer.colorize(Mark(msg, self.context_color_tag)),
-            )
-            cfunc = partial(
-                self.colorizer.colorize,
-                context_color_tag=self.context_color_tag,
-            )
-        else:
-            cfunc = self.colorizer.colorize
-
-        args = map(cfunc, args)
-        kwargs = {
-            key: cfunc(value)
-            for key, value in kwargs.items()
-        }
-        self.stream.write(msg.format(*args, **kwargs))
-        self.stream.write('\n')
-
-    def with_context(self, context_color_tag):
-        """
-        Returns a new printer that has the specified context color tag.
-
-        :param context_color_tag: The context color tag to use for messages.
-        :returns: A :class:`chromalog.colorizer.Printer` instance.
-        """
-        return Printer(
-            colorizer=self.colorizer,
-            stream=self.stream,
-            context_color_tag=context_color_tag,
-        )
-
-
 class GenericColorizer(object):
     """
     A class reponsible for colorizing log entries and
@@ -214,27 +154,41 @@ class GenericColorizer(object):
         self.color_map = color_map or self.default_color_map
         self.default_color_tag = default_color_tag
 
-    def get_color_pair(self, color_tag, context_color_tag=None):
+    def get_color_pair(
+        self,
+        color_tag,
+        context_color_tag=None,
+        use_default=True,
+    ):
         """
         Get the color pairs for the specified `color_tag` and
         `context_color_tag`.
 
-        :param color: A list of color tags.
-        :param context_color_tag: A color tag to use as a context.
+        :param color_tag: A list of color tags.
+        :param context_color_tag: A list of color tags to use as a context.
+        :param use_default: If :const:`False` then the default value won't be
+            used in case the ``color_tag`` is not found in the associated color
+            map.
         :returns: A pair of color sequences.
         """
+        if isinstance(color_tag, string_types):
+            color_tag = [color_tag]
+
         pairs = list(
             filter(None, (self.color_map.get(tag) for tag in color_tag))
         )
 
-        if not pairs:
+        if not pairs and use_default:
             pair = self.color_map.get(self.default_color_tag)
 
             if pair:
                 pairs = [pair]
 
         if context_color_tag:
-            ctx_pair = self.color_map.get(context_color_tag)
+            ctx_pair = self.get_color_pair(
+                color_tag=context_color_tag,
+                use_default=False,
+            )
 
             if ctx_pair:
                 pairs = [ctx_pair[::-1], ctx_pair] + pairs
@@ -244,11 +198,13 @@ class GenericColorizer(object):
             ''.join(x[1] for x in reversed(pairs)),
         )
 
-    def colorize(self, obj, context_color_tag=None):
+    def colorize(self, obj, color_tag=None, context_color_tag=None):
         """
         Colorize an object.
 
         :param obj: The object to colorize.
+        :param color_tag: The color tag to use as a default if ``obj`` is not
+            marked.
         :param context_color_tag: The color tag to use as context.
         :returns: ``obj`` if ``obj`` is not a colorizable object. A colorized
             string otherwise.
@@ -256,30 +212,48 @@ class GenericColorizer(object):
         .. note: A colorizable object must have a truthy-``color_tag``
             attribute.
         """
-        color_tag = getattr(obj, 'color_tag', None)
+        color_tag = getattr(obj, 'color_tag', color_tag)
 
         if color_tag:
-            color_pair = self.get_color_pair(color_tag, context_color_tag)
+            color_pair = self.get_color_pair(
+                color_tag=color_tag,
+                context_color_tag=context_color_tag,
+            )
         else:
             color_pair = None
 
         return ColorizedObject(obj=obj, color_pair=color_pair)
 
-    def printer(self, stream=None, context_color_tag=None):
+    def colorize_message(self, message, *args, **kwargs):
         """
-        Get a :class:`chromalog.colorizer.Printer` associated to this colorizer
-        and the given stream.
+        Colorize a message.
 
-        :param stream: The stream to associate to the printer. If set to
-            :const:`None`, ``sys.stdout`` will be used.
-        :param context_color_tag: The context color tag to use for messages.
-        :returns: A :class:`chromalog.colorizer.Printer` instance.
+        :param message: The message to colorize. If message is a marked object,
+            its color tag will be used as a ``context_color_tag``. ``message``
+            may contain formatting placeholders as described in
+            :func:`str.format`.
+        :returns: The colorized message.
+
+        .. warning::
+            This function has no way of check the color-capability of any
+            stream that the resulting string might be printed to.
         """
-        return Printer(
-            colorizer=self,
-            stream=stream,
-            context_color_tag=context_color_tag,
-        )
+        context_color_tag = getattr(message, 'color_tag', None)
+        args = [
+            self.colorize(arg, context_color_tag=context_color_tag)
+            for arg in args
+        ]
+        kwargs = {
+            key: self.colorize(value, context_color_tag=context_color_tag)
+            for key, value in kwargs.items()
+        }
+        if context_color_tag:
+            return str(self.colorize(
+                str(message).format(*args, **kwargs),
+                color_tag=context_color_tag,
+            ))
+        else:
+            return message.format(*args, **kwargs)
 
 
 class Colorizer(GenericColorizer):

@@ -1,14 +1,9 @@
 """
 Test colorizers.
 """
-from builtins import str
+from builtins import str  # noqa
 
 from unittest import TestCase
-
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
 
 from chromalog.colorizer import (
     ColorizedObject,
@@ -23,20 +18,23 @@ from .common import repeat_for_values
 class ColorizerTests(TestCase):
     def test_colorizer_get_color_pair_not_found(self):
         colorizer = Colorizer({})
-        self.assertEqual(('', ''), colorizer.get_color_pair(['a']))
+        self.assertEqual(('', ''), colorizer.get_color_pair(color_tag=['a']))
 
     def test_colorizer_get_color_pair_found(self):
         colorizer = Colorizer({
             'a': ('[', ']'),
         })
-        self.assertEqual(('[', ']'), colorizer.get_color_pair(['a']))
+        self.assertEqual(('[', ']'), colorizer.get_color_pair(color_tag=['a']))
 
     def test_colorizer_get_color_pair_found_double(self):
         colorizer = Colorizer({
             'a': ('[', ']'),
             'b': ('<', '>'),
         })
-        self.assertEqual(('[<', '>]'), colorizer.get_color_pair(['a', 'b']))
+        self.assertEqual(
+            ('[<', '>]'),
+            colorizer.get_color_pair(color_tag=['a', 'b']),
+        )
 
     def test_colorizer_get_color_pair_not_found_with_default(self):
         colorizer = Colorizer(
@@ -46,7 +44,20 @@ class ColorizerTests(TestCase):
             },
             default_color_tag='b',
         )
-        self.assertEqual(('<', '>'), colorizer.get_color_pair(['c']))
+        self.assertEqual(('<', '>'), colorizer.get_color_pair(color_tag=['c']))
+
+    def test_colorizer_get_color_pair_not_found_with_disabled_default(self):
+        colorizer = Colorizer(
+            {
+                'a': ('[', ']'),
+                'b': ('<', '>'),
+            },
+            default_color_tag='b',
+        )
+        self.assertEqual(
+            ('', ''),
+            colorizer.get_color_pair(color_tag=['c'], use_default=False),
+        )
 
     def test_colorizer_get_color_pair_found_with_context(self):
         colorizer = Colorizer(
@@ -55,7 +66,26 @@ class ColorizerTests(TestCase):
                 'b': ('<', '>'),
             },
         )
-        self.assertEqual(('><[', ']><'), colorizer.get_color_pair(['a'], 'b'))
+        self.assertEqual(
+            ('><[', ']><'),
+            colorizer.get_color_pair(color_tag=['a'], context_color_tag='b'),
+        )
+
+    def test_colorizer_get_color_pair_found_with_list_context(self):
+        colorizer = Colorizer(
+            {
+                'a': ('[', ']'),
+                'b': ('<', '>'),
+                'c': ('(', ')'),
+            },
+        )
+        self.assertEqual(
+            (')><([', '])><('),
+            colorizer.get_color_pair(
+                color_tag=['a'],
+                context_color_tag=['b', 'c'],
+            ),
+        )
 
     @repeat_for_values()
     def test_colorizer_converts_unknown_types(self, _, value):
@@ -94,7 +124,7 @@ class ColorizerTests(TestCase):
         })
         self.assertEqual(
             ColorizedObject(Mark(value, 'a'), ('><[', ']><')),
-            colorizer.colorize(Mark(value, 'a'), 'b'),
+            colorizer.colorize(Mark(value, 'a'), context_color_tag='b'),
         )
 
     @repeat_for_values()
@@ -110,7 +140,7 @@ class ColorizerTests(TestCase):
         })
         self.assertEqual(
             ColorizedObject(Mark(value, ['a', 'b']), ('><[(', ')]><')),
-            colorizer.colorize(Mark(value, ['a', 'b']), 'c'),
+            colorizer.colorize(Mark(value, ['a', 'b']), context_color_tag='c'),
         )
 
     @repeat_for_values({
@@ -199,34 +229,35 @@ class ColorizerTests(TestCase):
             result,
         )
 
-    def test_printer(self):
+    def test_colorize_message(self):
+        colorizer = Colorizer(color_map={
+            'a': ('[', ']'),
+            'b': ('(', ')'),
+        })
+        message = '{}-{}_{a}~{b}'
+        args = [42, Mark(42, ['a', 'b'])]
+        kwargs = {
+            'a': 0,
+            'b': Mark(0, ['b', 'a']),
+        }
+        self.assertEqual(
+            '42-[(42)]_0~([0])',
+            colorizer.colorize_message(message, *args, **kwargs),
+        )
+
+    def test_colorize_message_with_context(self):
         colorizer = Colorizer(color_map={
             'a': ('[', ']'),
             'b': ('(', ')'),
             'c': ('<', '>'),
         })
-        stream = StringIO()
-        printer = colorizer.printer(stream)
-
-        printer(
-            'this {} a {value} !',
-            'is',
-            value=Mark('value', ['a', 'b', 'c']),
+        message = Mark('{}-{}_{a}~{b}', 'c')
+        args = [42, Mark(42, ['a', 'b'])]
+        kwargs = {
+            'a': 0,
+            'b': Mark(0, ['b', 'a']),
+        }
+        self.assertEqual(
+            '<42-><[(42)]><_0~><([0])><>',
+            colorizer.colorize_message(message, *args, **kwargs),
         )
-        self.assertEqual('this is a [(<value>)] !\n', stream.getvalue())
-
-    def test_printer_with_context(self):
-        colorizer = Colorizer(color_map={
-            'a': ('[', ']'),
-            'b': ('(', ')'),
-            'c': ('<', '>'),
-        })
-        stream = StringIO()
-        printer = colorizer.printer(stream)
-
-        printer.with_context('c')(
-            'this {} a {value} !',
-            'is',
-            value=Mark('value', ['a', 'b']),
-        )
-        self.assertEqual('<this is a ><[(value)]>< !>\n', stream.getvalue())
