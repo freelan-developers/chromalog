@@ -9,7 +9,7 @@ from chromalog.log import (
     ColorizingFormatter,
 )
 
-from chromalog.mark import (
+from chromalog.mark.helpers.simple import (
     important,
     success,
     error,

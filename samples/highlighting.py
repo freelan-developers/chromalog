@@ -1,7 +1,7 @@
 import logging
 import chromalog
 
-from chromalog.mark import success, error, important
+from chromalog.mark.helpers.simple import success, error, important
 
 chromalog.basicConfig(format="%(message)s", level=logging.INFO)
 logger = logging.getLogger()
