@@ -30,9 +30,9 @@ message.
         'scripts',
     ]),
     install_requires=[
-        'colorama==0.3.3',
-        'future==0.14.3',
-        'six>=1.9.0,<2',
+        'colorama>=0.3.3',
+        'future>=0.14.3',
+        'six>=1.9.0',
     ],
     test_suite='tests',
     classifiers=[
@@ -46,6 +46,6 @@ message.
         'Topic :: Software Development',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'License :: OSI Approved :: MIT License',
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
     ],
 )

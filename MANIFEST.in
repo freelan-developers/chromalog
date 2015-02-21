@@ -1,2 +1,4 @@
 include README.md
 include VERSION
+include requirements.txt
+include dev_requirements.txt
