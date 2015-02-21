@@ -282,6 +282,37 @@ defining the ``default_color_map`` class attribute, like so:
          'success': (Fore.GREEN, Style.RESET_ALL),
       }
 
+Decorating messages
+###################
+
+Colorizers also provide a method to directly colorize a message, regardless of any output stream and its color capabilities:
+
+.. automethod:: chromalog.colorizer.GenericColorizer.colorize_message
+   :noindex:
+
+Here is an example of usage:
+
+.. testcode::
+
+   from chromalog.colorizer import GenericColorizer
+   from chromalog.mark.helpers.simple import alpha
+
+   colorizer = GenericColorizer(color_map={
+       'alpha': ('[', ']'),
+   })
+
+   print(colorizer.colorize_message(
+       'hello {} ! How {are} you ?',
+       alpha('world'),
+       are=alpha('are'),
+   ))
+
+This gives the following output:
+
+.. testoutput::
+
+   hello [world] ! How [are] you ?
+
 .. _default_color_maps:
 
 Default color maps and sequences
