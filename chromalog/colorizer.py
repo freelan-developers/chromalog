@@ -48,14 +48,20 @@ class ColorizedObject(object):
         """
         Gives a representation of the colorized object.
 
+        >>> repr(ColorizedObject('a'))
+        "'a'"
+
         >>> repr(ColorizedObject('a', ('<', '>')))
-        "ColorizedObject('a', ('<', '>'))"
+        "<'a'>"
         """
-        return '{klass}({obj!r}, {color_pair!r})'.format(
-            klass=self.__class__.__name__,
-            obj=self.obj,
-            color_pair=self.color_pair,
-        )
+        if not self.color_pair:
+            return repr(self.obj)
+        else:
+            return "{color_start}{obj!r}{color_stop}".format(
+                color_start=self.color_pair[0],
+                obj=self.obj,
+                color_stop=self.color_pair[1],
+            )
 
     def __str__(self):
         """
