@@ -2,9 +2,15 @@
 Mark log entries.
 """
 from builtins import str
-from six import string_types
+from six import (
+    string_types,
+    PY3,
+)
 
 from ..colorizer import ColorizableMixin
+
+# Hack to define unicode in Python 3 and reach 100% coverage.
+unicode = str if PY3 else unicode
 
 
 class Mark(ColorizableMixin):
@@ -68,6 +74,12 @@ class Mark(ColorizableMixin):
         'hello'
         """
         return str(self.obj)
+
+    def __unicode__(self):
+        """
+        Gives a string representation of the marked object.
+        """
+        return unicode(self.obj)
 
     def __int__(self):
         """

@@ -2,13 +2,19 @@
 Colorizing functions and structures.
 """
 from builtins import object
-from six import string_types
+from six import (
+    string_types,
+    PY3,
+)
 
 from colorama import (
     Fore,
     Back,
     Style,
 )
+
+# Hack to define unicode in Python 3 and reach 100% coverage.
+unicode = str if PY3 else unicode
 
 
 class ColorizableMixin(object):
@@ -47,12 +53,6 @@ class ColorizedObject(object):
     def __repr__(self):
         """
         Gives a representation of the colorized object.
-
-        >>> repr(ColorizedObject('a'))
-        "'a'"
-
-        >>> repr(ColorizedObject('a', ('<', '>')))
-        "<'a'>"
         """
         if not self.color_pair:
             return repr(self.obj)
@@ -66,12 +66,6 @@ class ColorizedObject(object):
     def __str__(self):
         """
         Gives a string representation of the colorized object.
-
-        >>> str(ColorizedObject('a'))
-        'a'
-
-        >>> str(ColorizedObject('a', ('<', '>')))
-        '<a>'
         """
         if not self.color_pair:
             return str(self.obj)
@@ -82,30 +76,34 @@ class ColorizedObject(object):
                 color_stop=self.color_pair[1],
             )
 
+    def __unicode__(self):
+        """
+        Gives a string representation of the colorized object.
+        """
+        if not self.color_pair:
+            return unicode(self.obj)
+        else:
+            return u"{color_start}{obj}{color_stop}".format(
+                color_start=self.color_pair[0],
+                obj=self.obj,
+                color_stop=self.color_pair[1],
+            )
+
     def __int__(self):
         """
         Gives an integer representation of the colorized object.
-
-        >>> int(ColorizedObject(42))
-        42
         """
         return int(self.obj)
 
     def __float__(self):
         """
         Gives a float representation of the colorized object.
-
-        >>> float(ColorizedObject(3.14))
-        3.14
         """
         return float(self.obj)
 
     def __bool__(self):
         """
         Gives a boolean representation of the colorized object.
-
-        >>> bool(ColorizedObject(True))
-        True
         """
         return bool(self.obj)
 

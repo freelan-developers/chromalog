@@ -3,6 +3,12 @@ Test object marking.
 """
 
 from unittest import TestCase
+from six import (
+    PY2,
+    PY3,
+)
+
+import mock
 
 from chromalog.mark import Mark
 
@@ -15,6 +21,11 @@ from .common import (
 class MarkTests(TestCase):
     @repeat_for_values()
     def test_string_rendering_of_marked(self, _, value):
+        # Python2 non-unicode string want to use the 'ascii' encoding for this
+        # conversion, which cannot work.
+        if PY2 and isinstance(value, unicode):
+            return
+
         self.assertEqual('{}'.format(value), '{}'.format(Mark(value, 'a')))
 
     @repeat_for_values()
@@ -83,3 +94,10 @@ class MarkTests(TestCase):
         self.assertEqual([false_color_tag], helper(42, False).color_tag)
         self.assertEqual([true_color_tag], helper(True).color_tag)
         self.assertEqual([false_color_tag], helper(False).color_tag)
+
+    def test_explicit_unicode_in_python3(self):
+        if PY3:
+            self.assertEqual(
+                u'test',
+                Mark(u'test', 'foo').__unicode__(),
+            )

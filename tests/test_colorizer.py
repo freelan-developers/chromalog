@@ -4,6 +4,7 @@ Test colorizers.
 from builtins import str  # noqa
 
 from unittest import TestCase
+from six import PY3
 
 from chromalog.colorizer import (
     ColorizedObject,
@@ -261,3 +262,64 @@ class ColorizerTests(TestCase):
             '<42-><[(42)]><_0~><([0])><>',
             colorizer.colorize_message(message, *args, **kwargs),
         )
+
+    @repeat_for_values()
+    def test_colorized_object_conversion(self, _, value):
+        self.assertEqual(
+            u'{}'.format(value),
+            u'{}'.format(ColorizedObject(value)),
+        )
+
+    @repeat_for_values()
+    def test_colorized_object_conversion_with_color_pair(self, _, value):
+        self.assertEqual(
+            u'<{}>'.format(value),
+            u'{}'.format(ColorizedObject(value, color_pair=('<', '>'))),
+        )
+
+    @repeat_for_values()
+    def test_colorized_object_representation(self, _, value):
+        self.assertEqual(
+            repr(value),
+            repr(ColorizedObject(value)),
+        )
+
+    @repeat_for_values()
+    def test_colorized_object_representation_with_color_pair(self, _, value):
+        self.assertEqual(
+            u'<{!r}>'.format(value),
+            repr(ColorizedObject(value, color_pair=('<', '>'))),
+        )
+
+    @repeat_for_values({
+        "integer": int,
+        "float": float,
+        "boolean": bool,
+    })
+    def test_colorized_object_cast(self, _, type_):
+        self.assertEqual(
+            type_(),
+            type_(ColorizedObject(type_())),
+        )
+
+    @repeat_for_values({
+        "integer": int,
+        "float": float,
+        "boolean": bool,
+    })
+    def test_colorized_object_cast_with_color_pair(self, _, type_):
+        self.assertEqual(
+            type_(),
+            type_(ColorizedObject(type_(), color_pair=('<', '>'))),
+        )
+
+    def test_explicit_unicode_in_python3(self):
+        if PY3:
+            self.assertEqual(
+                u'test',
+                ColorizedObject(u'test').__unicode__(),
+            )
+            self.assertEqual(
+                u'<test>',
+                ColorizedObject(u'test', color_pair=('<', '>')).__unicode__(),
+            )
