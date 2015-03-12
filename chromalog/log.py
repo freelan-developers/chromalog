@@ -12,6 +12,7 @@ from contextlib import contextmanager
 
 from .colorizer import Colorizer
 from .mark.objects import Mark
+from .stream import stream_has_color_support
 
 
 class ColorizingFormatter(logging.Formatter):
@@ -82,16 +83,6 @@ class ColorizingStreamHandler(logging.StreamHandler):
         'message': lambda record: str(record.levelname).lower(),
     }
 
-    @staticmethod
-    def stream_has_color_support(stream):
-        """
-        Check if a stream has color support.
-
-        :param stream: The stream to check.
-        :returns: True if stream has color support.
-        """
-        return getattr(stream, 'isatty', lambda: False)()
-
     def __init__(
         self,
         stream=None,
@@ -113,7 +104,7 @@ class ColorizingStreamHandler(logging.StreamHandler):
         if not stream:
             stream = sys.stderr
 
-        self.has_color_support = self.stream_has_color_support(stream)
+        self.has_color_support = stream_has_color_support(stream)
         self.color_disabled = False
         self.attributes_map = attributes_map or self.default_attributes_map
 
