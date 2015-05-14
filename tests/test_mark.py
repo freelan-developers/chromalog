@@ -8,8 +8,6 @@ from six import (
     PY3,
 )
 
-import mock
-
 from chromalog.mark import Mark
 
 from .common import (
