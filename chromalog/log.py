@@ -25,13 +25,17 @@ class ColorizingFormatter(logging.Formatter):
         save_dict = record.__dict__.copy()
 
         if colorizer:
-            record.args = tuple(map(
-                partial(
-                    colorizer.colorize,
-                    context_color_tag=message_color_tag,
-                ),
-                record.args,
-            ))
+            if isinstance(record.args, dict):
+                record.args = {k: colorizer.colorize(v, context_color_tag=message_color_tag)
+                               for k, v in record.args.items()}
+            else:
+                record.args = tuple(map(
+                    partial(
+                        colorizer.colorize,
+                        context_color_tag=message_color_tag,
+                    ),
+                    record.args,
+                ))
             record.filename = colorizer.colorize(record.filename)
             record.funcName = colorizer.colorize(record.funcName)
             record.levelname = colorizer.colorize(record.levelname)

@@ -46,6 +46,19 @@ class LogTests(TestCase):
         )
         self.assertEqual('4 + 5 gives 9', formatter.format(record))
 
+    def test_colorizing_formatter_without_a_colorizer_mapping(self):
+        formatter = ColorizingFormatter(fmt='%(message)s')
+        record = LogRecord(
+            name='my_record',
+            level=DEBUG,
+            pathname='my_path',
+            lineno=42,
+            msg='%(summand1)d + %(summand2)d gives %(sum)d',
+            args=({'summand1': 4, 'summand2': 5, 'sum': 4 + 5},),
+            exc_info=None,
+        )
+        self.assertEqual('4 + 5 gives 9', formatter.format(record))
+
     def test_colorizing_formatter_with_a_colorizer(self):
         formatter = ColorizingFormatter(fmt='%(message)s')
         record = LogRecord(
@@ -55,6 +68,33 @@ class LogTests(TestCase):
             lineno=42,
             msg='%s + %s gives %s',
             args=(4, 5, 4 + 5,),
+            exc_info=None,
+        )
+        setattr(
+            record,
+            ColorizingStreamHandler._RECORD_ATTRIBUTE_NAME,
+            self.create_colorizer(format='[%s]'),
+        )
+
+        self.assertEqual('[4] + [5] gives [9]', formatter.format(record))
+
+        colorizer = getattr(
+            record,
+            ColorizingStreamHandler._RECORD_ATTRIBUTE_NAME,
+        )
+        colorizer.colorize.assert_any_call(4, context_color_tag=None)
+        colorizer.colorize.assert_any_call(5, context_color_tag=None)
+        colorizer.colorize.assert_any_call(9, context_color_tag=None)
+
+    def test_colorizing_formatter_with_a_colorizer_mapping(self):
+        formatter = ColorizingFormatter(fmt='%(message)s')
+        record = LogRecord(
+            name='my_record',
+            level=DEBUG,
+            pathname='my_path',
+            lineno=42,
+            msg='%(summand1)s + %(summand2)s gives %(sum)s',
+            args=({'summand1': 4, 'summand2': 5, 'sum': 4 + 5},),
             exc_info=None,
         )
         setattr(
