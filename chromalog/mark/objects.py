@@ -95,8 +95,8 @@ class Mark(ColorizableMixin):
         Gives a float representation of the marked object.
 
         >>> float(Mark(3.14, []))
-        3.14
-        """
+        %f
+        """ % (float(self.obj))  # Account for Python 2.6 discrepancy
         return float(self.obj)
 
     def __bool__(self):
