@@ -15,7 +15,7 @@ from .mark.objects import Mark
 from .stream import stream_has_color_support
 
 
-class ColorizingFormatter(logging.Formatter):
+class ColorizingFormatter(logging.Formatter, object):
     """
     A formatter that colorize its output.
     """
@@ -80,7 +80,7 @@ class ColorizingFormatter(logging.Formatter):
             return super(ColorizingFormatter, self).format(record)
 
 
-class ColorizingStreamHandler(logging.StreamHandler):
+class ColorizingStreamHandler(logging.StreamHandler, object):
     """
     A stream handler that colorize its output.
     """
