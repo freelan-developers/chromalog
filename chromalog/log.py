@@ -26,10 +26,13 @@ class ColorizingFormatter(logging.Formatter):
 
         if colorizer:
             if isinstance(record.args, dict):
-                record.args = {
-                    k: colorizer.colorize(
-                        v, context_color_tag=message_color_tag
-                    ) for k, v in record.args.items()}
+                record.args = dict(
+                    (
+                        k, colorizer.colorize(
+                            v, context_color_tag=message_color_tag
+                        )
+                    ) for k, v in record.args.items()
+                )
             else:
                 record.args = tuple(map(
                     partial(
