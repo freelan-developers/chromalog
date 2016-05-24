@@ -121,7 +121,7 @@ class ColorizingStreamHandler(logging.StreamHandler, object):
             stream = AnsiToWin32(stream).stream
 
         super(ColorizingStreamHandler, self).__init__(
-            stream=stream
+            stream
         )
         self.colorizer = colorizer or Colorizer()
         self.highlighter = highlighter
