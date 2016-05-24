@@ -302,7 +302,7 @@ Here is an example of usage:
    })
 
    print(colorizer.colorize_message(
-       'hello {} ! How {are} you ?',
+       'hello {0} ! How {are} you ?',
        alpha('world'),
        are=alpha('are'),
    ))

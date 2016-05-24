@@ -24,11 +24,11 @@ class MarkTests(TestCase):
         if PY2 and isinstance(value, unicode):
             return
 
-        self.assertEqual('{}'.format(value), '{}'.format(Mark(value, 'a')))
+        self.assertEqual('{0}'.format(value), '{0}'.format(Mark(value, 'a')))
 
     @repeat_for_values()
     def test_unicode_rendering_of_marked(self, _, value):
-        self.assertEqual(u'{}'.format(value), u'{}'.format(Mark(value, 'a')))
+        self.assertEqual(u'{0}'.format(value), u'{0}'.format(Mark(value, 'a')))
 
     @repeat_for_integral_values()
     def test_int_rendering_of_marked(self, _, value):
