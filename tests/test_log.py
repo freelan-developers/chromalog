@@ -13,6 +13,7 @@ from mock import (
     MagicMock,
     patch,
 )
+from six import StringIO
 
 from chromalog import basicConfig
 from chromalog.colorizer import GenericColorizer
@@ -119,21 +120,21 @@ class LogTests(TestCase):
         handler = ColorizingStreamHandler()
         self.assertEqual(stream, handler.stream)
 
-    @patch('colorama.ansitowin32.StreamWrapper')
-    def test_csh_uses_streamwrapper(
-        self,
-        proxy,
-    ):
-        ColorizingStreamHandler()
-        proxy.assert_called_once()
+    def test_csh_uses_streamwrapper(self):
+        stream = StringIO()
 
-    @patch('colorama.ansitowin32.StreamWrapper')
-    def test_csh_dont_uses_streamwrapper_if_no_color(
-        self,
-        proxy,
-    ):
-        ColorizingStreamHandler(stream=MagicMock(spec=object))
-        self.assertFalse(proxy.called)
+        with patch(
+            'chromalog.log.stream_has_color_support',
+            return_value=True,
+        ):
+            handler = ColorizingStreamHandler(stream=stream)
+
+        self.assertIsNot(handler.stream, stream)
+
+    def test_csh_dont_uses_streamwrapper_if_no_color(self):
+        stream = StringIO()
+        handler = ColorizingStreamHandler(stream=stream)
+        self.assertIs(handler.stream, stream)
 
     def test_csh_format(self):
         colorizer = GenericColorizer(color_map={
