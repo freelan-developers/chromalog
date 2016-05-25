@@ -30,9 +30,9 @@ message.
         'scripts',
     ]),
     install_requires=[
-        'colorama>=0.3.3',
+        'colorama>=0.3.7',
         'future>=0.14.3',
-        'six>=1.9.0',
+        'six>=1.9.0,<2',
     ],
     test_suite='tests',
     classifiers=[
