@@ -15,7 +15,7 @@ from .mark.objects import Mark
 from .stream import stream_has_color_support
 
 
-class ColorizingFormatter(logging.Formatter):
+class ColorizingFormatter(logging.Formatter, object):
     """
     A formatter that colorize its output.
     """
@@ -26,10 +26,13 @@ class ColorizingFormatter(logging.Formatter):
 
         if colorizer:
             if isinstance(record.args, dict):
-                record.args = {
-                    k: colorizer.colorize(
-                        v, context_color_tag=message_color_tag
-                    ) for k, v in record.args.items()}
+                record.args = dict(
+                    (
+                        k, colorizer.colorize(
+                            v, context_color_tag=message_color_tag
+                        )
+                    ) for k, v in record.args.items()
+                )
             else:
                 record.args = tuple(map(
                     partial(
@@ -77,7 +80,7 @@ class ColorizingFormatter(logging.Formatter):
             return super(ColorizingFormatter, self).format(record)
 
 
-class ColorizingStreamHandler(logging.StreamHandler):
+class ColorizingStreamHandler(logging.StreamHandler, object):
     """
     A stream handler that colorize its output.
     """
@@ -118,7 +121,7 @@ class ColorizingStreamHandler(logging.StreamHandler):
             stream = AnsiToWin32(stream).stream
 
         super(ColorizingStreamHandler, self).__init__(
-            stream=stream
+            stream
         )
         self.colorizer = colorizer or Colorizer()
         self.highlighter = highlighter

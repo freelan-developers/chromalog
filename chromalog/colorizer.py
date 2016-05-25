@@ -247,10 +247,11 @@ class GenericColorizer(object):
             self.colorize(arg, context_color_tag=context_color_tag)
             for arg in args
         ]
-        kwargs = {
-            key: self.colorize(value, context_color_tag=context_color_tag)
-            for key, value in kwargs.items()
-        }
+        kwargs = dict(
+            (
+                key, self.colorize(value, context_color_tag=context_color_tag)
+            ) for key, value in kwargs.items()
+        )
         if context_color_tag:
             return str(self.colorize(
                 str(message).format(*args, **kwargs),

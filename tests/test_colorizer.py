@@ -235,7 +235,7 @@ class ColorizerTests(TestCase):
             'a': ('[', ']'),
             'b': ('(', ')'),
         })
-        message = '{}-{}_{a}~{b}'
+        message = '{0}-{1}_{a}~{b}'
         args = [42, Mark(42, ['a', 'b'])]
         kwargs = {
             'a': 0,
@@ -252,7 +252,7 @@ class ColorizerTests(TestCase):
             'b': ('(', ')'),
             'c': ('<', '>'),
         })
-        message = Mark('{}-{}_{a}~{b}', 'c')
+        message = Mark('{0}-{1}_{a}~{b}', 'c')
         args = [42, Mark(42, ['a', 'b'])]
         kwargs = {
             'a': 0,
@@ -266,15 +266,15 @@ class ColorizerTests(TestCase):
     @repeat_for_values()
     def test_colorized_object_conversion(self, _, value):
         self.assertEqual(
-            u'{}'.format(value),
-            u'{}'.format(ColorizedObject(value)),
+            u'{0}'.format(value),
+            u'{0}'.format(ColorizedObject(value)),
         )
 
     @repeat_for_values()
     def test_colorized_object_conversion_with_color_pair(self, _, value):
         self.assertEqual(
-            u'<{}>'.format(value),
-            u'{}'.format(ColorizedObject(value, color_pair=('<', '>'))),
+            u'<{0}>'.format(value),
+            u'{0}'.format(ColorizedObject(value, color_pair=('<', '>'))),
         )
 
     @repeat_for_values()
@@ -287,7 +287,7 @@ class ColorizerTests(TestCase):
     @repeat_for_values()
     def test_colorized_object_representation_with_color_pair(self, _, value):
         self.assertEqual(
-            u'<{!r}>'.format(value),
+            u'<{0!r}>'.format(value),
             repr(ColorizedObject(value, color_pair=('<', '>'))),
         )
 
