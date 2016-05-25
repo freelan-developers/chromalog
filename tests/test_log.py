@@ -129,12 +129,12 @@ class LogTests(TestCase):
         ):
             handler = ColorizingStreamHandler(stream=stream)
 
-        self.assertIsNot(handler.stream, stream)
+        self.assertFalse(handler.stream is stream)
 
     def test_csh_dont_uses_streamwrapper_if_no_color(self):
         stream = StringIO()
         handler = ColorizingStreamHandler(stream=stream)
-        self.assertIs(handler.stream, stream)
+        self.assertTrue(handler.stream is stream)
 
     def test_csh_format(self):
         colorizer = GenericColorizer(color_map={
